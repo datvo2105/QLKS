@@ -17,8 +17,8 @@ public class Room {
 	public List<BLL.Room> getAllRoom(String search) {
 		sql = "SELECT * FROM ROOM WHERE ROOM.ROOM_NAME LIKE ?";
 		List list = new ArrayList<>();
-		try {
-			if (conn != null) {
+		if (conn != null) {
+			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
 				sm.setString(1, "%" + search + "%");
 				ResultSet rs = sm.executeQuery();
@@ -33,54 +33,83 @@ public class Room {
 					room.setPriKey(rs.getString("PRIVATE_KEY"));
 					list.add(room);
 				}
-			} else {
-				System.out.println("Connect error!!!");
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
 			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
 		return list;
 	}
 
 	public Boolean createRoom(BLL.Room room) {
-		try {
-			PreparedStatement statement = DB.getConnect().prepareStatement(
-				"{CALL ROOM_PKG.INSERT_ROOM(?,?,?)}");
+		sql = "{CALL ROOM_PKG.INSERT_ROOM(?,?,?)}";
+		if (conn != null) {
+			try {
+				PreparedStatement statement = conn.prepareStatement(sql);
 
-			statement.setString(1, room.getName());
-			statement.setString(2, room.getStatus());
-			statement.setDouble(3, room.getPrice());
+				statement.setString(1, room.getName());
+				statement.setString(2, room.getStatus());
+				statement.setDouble(3, room.getPrice());
 
-			int rowsInserted = statement.executeUpdate();
+				int rowsInserted = statement.executeUpdate();
 
-			return rowsInserted > 0;
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+				return rowsInserted > 0;
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
 		return false;
 	}
 
 	public Boolean updateRoom(BLL.Room room) {
-		try {
-			PreparedStatement statement = DB.getConnect().prepareStatement(
+		if (conn != null) {
+			try {
+				PreparedStatement statement = DB.getConnect().prepareStatement(
 				"{CALL ROOM_PKG.UPDATE_ROOM(?,?,?,?,?,?)}");
 
-			statement.setInt(1, room.getId());
-			statement.setString(2, room.getName());
-			statement.setString(3, room.getStatus());
-			statement.setDouble(4, room.getPrice());
-			statement.setString(5, room.getPubKey());
-			statement.setString(6, room.getPriKey());
+				statement.setInt(1, room.getId());
+				statement.setString(2, room.getName());
+				statement.setString(3, room.getStatus());
+				statement.setDouble(4, room.getPrice());
+				statement.setString(5, room.getPubKey());
+				statement.setString(6, room.getPriKey());
 
-			int rowsInserted = statement.executeUpdate();
+				int rowsInserted = statement.executeUpdate();
 
-			return rowsInserted > 0;
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+				return rowsInserted > 0;
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
+		return false;
+	}
+
+	public Boolean deleteRoom(BLL.Room room) {
+		if (conn != null) {
+			try {
+				PreparedStatement statement = DB.getConnect().prepareStatement(
+				"{CALL ROOM_PKG.DELETE_ROOM(?)}");
+
+				statement.setInt(1, room.getId());
+
+				int rowsInserted = statement.executeUpdate();
+
+				return rowsInserted > 0;
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+
+		} else {
+			System.out.println("Connect error!!!");
+		}
 		return false;
 	}
 }

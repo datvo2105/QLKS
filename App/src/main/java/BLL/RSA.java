@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package DAL;
+package BLL;
 
 import java.security.*;
 import java.security.spec.*;
@@ -25,16 +25,24 @@ public class RSA {
 		this.key = generator.generateKeyPair();
 	}
 
+	public String parserString(byte[] value) {
+		return Base64.getEncoder().encodeToString(value);
+	}
+
+	public byte[] parserByte(String value) {
+		return Base64.getDecoder().decode(value);
+	}
+
 	public String setPubKey() {
-		return Base64.getEncoder().encodeToString(key.getPublic().getEncoded());
+		return parserString(key.getPublic().getEncoded());
 	}
 
 	public String setPriKey() {
-		return Base64.getEncoder().encodeToString(key.getPrivate().getEncoded());
+		return parserString(key.getPrivate().getEncoded());
 	}
 
 	public PublicKey getPubKey(String key) throws InvalidKeySpecException {
-		byte[] publicKey = Base64.getDecoder().decode(key);
+		byte[] publicKey = parserByte(key);
 		try {
 			return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publicKey));
 		} catch (NoSuchAlgorithmException ex) {
@@ -44,7 +52,7 @@ public class RSA {
 	}
 
 	public PrivateKey getPriKey(String key) throws InvalidKeySpecException {
-		byte[] privateKey = Base64.getDecoder().decode(key);
+		byte[] privateKey = parserByte(key);
 		try {
 			return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(privateKey));
 		} catch (NoSuchAlgorithmException ex) {
@@ -53,16 +61,16 @@ public class RSA {
 		return null;
 	}
 
-	public byte[] encrypt(String key, String msg) throws Exception {
+	public String encrypt(String key, String msg) throws Exception {
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.ENCRYPT_MODE, getPubKey(key));
-		return cipher.doFinal(msg.getBytes());
+		return parserString(cipher.doFinal(msg.getBytes()));
 	}
 
-	public String decrypt(String key, byte[] encryptedMsg) throws Exception {
+	public String decrypt(String key, String encryptedMsg) throws Exception {
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.DECRYPT_MODE, getPriKey(key));
-		byte[] decryptedBytes = cipher.doFinal(encryptedMsg);
+		byte[] decryptedBytes = cipher.doFinal(parserByte(encryptedMsg));
 		return new String(decryptedBytes);
 	}
 }
