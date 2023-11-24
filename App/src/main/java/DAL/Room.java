@@ -44,16 +44,16 @@ public class Room {
 	}
 
 	public Boolean createRoom(BLL.Room room) {
-		sql = "{CALL ROOM_PKG.INSERT_ROOM(?,?,?)}";
+		sql = "{CALL DEV.ROOM_PKG.INSERT_ROOM( ?, ?, ?)}";
 		if (conn != null) {
 			try {
-				PreparedStatement statement = conn.prepareStatement(sql);
+				PreparedStatement sm = conn.prepareStatement(sql);
 
-				statement.setString(1, room.getName());
-				statement.setString(2, room.getStatus());
-				statement.setDouble(3, room.getPrice());
+				sm.setString(1, room.getName());
+				sm.setString(2, room.getStatus());
+				sm.setDouble(3, room.getPrice());
 
-				int rowsInserted = statement.executeUpdate();
+				int rowsInserted = sm.executeUpdate();
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
@@ -67,19 +67,19 @@ public class Room {
 	}
 
 	public Boolean updateRoom(BLL.Room room) {
+		sql = "{CALL DEV.ROOM_PKG.UPDATE_ROOM( ?, ?, ?, ?, ?, ?)}";
 		if (conn != null) {
 			try {
-				PreparedStatement statement = DB.getConnect().prepareStatement(
-				"{CALL ROOM_PKG.UPDATE_ROOM(?,?,?,?,?,?)}");
+				PreparedStatement sm = conn.prepareStatement(sql);
 
-				statement.setInt(1, room.getId());
-				statement.setString(2, room.getName());
-				statement.setString(3, room.getStatus());
-				statement.setDouble(4, room.getPrice());
-				statement.setString(5, room.getPubKey());
-				statement.setString(6, room.getPriKey());
+				sm.setInt(1, room.getId());
+				sm.setString(2, room.getName());
+				sm.setString(3, room.getStatus());
+				sm.setDouble(4, room.getPrice());
+				sm.setString(5, room.getPubKey());
+				sm.setString(6, room.getPriKey());
 
-				int rowsInserted = statement.executeUpdate();
+				int rowsInserted = sm.executeUpdate();
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
@@ -93,14 +93,14 @@ public class Room {
 	}
 
 	public Boolean deleteRoom(BLL.Room room) {
+		sql = "{CALL ROOM_PKG.DELETE_ROOM( ?)}";
 		if (conn != null) {
 			try {
-				PreparedStatement statement = DB.getConnect().prepareStatement(
-				"{CALL ROOM_PKG.DELETE_ROOM(?)}");
+				PreparedStatement sm = conn.prepareStatement(sql);
 
-				statement.setInt(1, room.getId());
+				sm.setInt(1, room.getId());
 
-				int rowsInserted = statement.executeUpdate();
+				int rowsInserted = sm.executeUpdate();
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {

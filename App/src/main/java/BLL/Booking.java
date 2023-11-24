@@ -15,6 +15,7 @@ public class Booking {
 	String roomKey;
 	String user;
 	int roomId;
+	String roomName;
 	double hours;
 
 	public Booking() {
@@ -26,12 +27,14 @@ public class Booking {
 	String roomKey,
 	String user,
 	int roomId,
+	String roomName,
 	double hours) {
 		this.id = id;
 		this.name = name;
 		this.roomKey = roomKey;
 		this.user = user;
 		this.roomId = roomId;
+		this.roomName = roomName;
 		this.hours = hours;
 	}
 
@@ -78,6 +81,15 @@ public class Booking {
 	public void setRoomId(
 	int roomId) {
 		this.roomId = roomId;
+	}
+
+	public String getRoomName() {
+		return roomName;
+	}
+
+	public void setRoomName(
+	String roomName) {
+		this.roomName = roomName;
 	}
 
 	public double getHours() {

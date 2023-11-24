@@ -61,13 +61,13 @@ public class RSA {
 		return null;
 	}
 
-	public String encrypt(String key, String msg) throws Exception {
+	public String encryptRSA(String key, String msg) throws Exception {
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.ENCRYPT_MODE, getPubKey(key));
 		return parserString(cipher.doFinal(msg.getBytes()));
 	}
 
-	public String decrypt(String key, String encryptedMsg) throws Exception {
+	public String decryptRSA(String key, String encryptedMsg) throws Exception {
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.DECRYPT_MODE, getPriKey(key));
 		byte[] decryptedBytes = cipher.doFinal(parserByte(encryptedMsg));

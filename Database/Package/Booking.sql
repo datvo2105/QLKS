@@ -24,9 +24,10 @@ CREATE OR REPLACE PACKAGE BOOKING_PKG IS
     );
 END BOOKING_PKG;
 /
+
 CREATE OR REPLACE PACKAGE BODY BOOKING_PKG IS
---==========================================================
---====================CREATE ROOM===========================
+ --==========================================================
+ --====================CREATE ROOM===========================
     PROCEDURE INSERT_BOOKING (
         BOOKING_NAME IN VARCHAR2,
         BOOKING_ROOM_KEY IN VARCHAR2,
@@ -50,8 +51,8 @@ CREATE OR REPLACE PACKAGE BODY BOOKING_PKG IS
         );
         COMMIT;
     END INSERT_BOOKING;
---==========================================================
---====================UPDATE ROOM===========================
+ --==========================================================
+ --====================UPDATE ROOM===========================
     PROCEDURE UPDATE_BOOKING(
         BOOKING_ID_PARAM IN NUMBER,
         BOOKING_NAME_PARAM IN VARCHAR2,
@@ -72,8 +73,8 @@ CREATE OR REPLACE PACKAGE BODY BOOKING_PKG IS
             BOOKING_ID = BOOKING_ID_PARAM;
         COMMIT;
     END UPDATE_BOOKING;
---==========================================================
---====================DELETE ROOM===========================
+ --==========================================================
+ --====================DELETE ROOM===========================
     PROCEDURE DELETE_BOOKING(
         BOOKING_ID_PARAM IN NUMBER
     ) IS
@@ -81,13 +82,22 @@ CREATE OR REPLACE PACKAGE BODY BOOKING_PKG IS
         DELETE FROM DEV.BOOKING
         WHERE
             DEV.BOOKING.BOOKING_ID = BOOKING_ID_PARAM;
+        COMMIT;
     END DELETE_BOOKING;
 END BOOKING_PKG;
 /
+
 --==========================================================
-SELECT * FROM BOOKING;
-CALL BOOKING_PKG.INSERT_BOOKING('Booking 02',
-            'test',
-            'DEV',
-            2,
-            2.5);
+SELECT
+    *
+FROM
+    ROOM;
+
+SELECT
+    *
+FROM
+    BOOKING;
+
+CALL BOOKING_PKG.INSERT_BOOKING('Booking 02', 'test', 'DEV', 2, 2.5);
+
+CALL BOOKING_PKG.UPDATE_BOOKING(21, 'BOOKING 02', 'test', 'DEV', 2, 2.5);

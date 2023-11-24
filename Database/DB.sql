@@ -1,4 +1,4 @@
-ALTER SESSION SET "_ORACLE_SCRIPT"=TRUE;
+ALTER SESSION SET "_ORACLE_SCRIPT" = true;
 
 CREATE USER DEV IDENTIFIED BY 1;
 
@@ -22,7 +22,8 @@ CREATE TABLE ROOM (
     PUBLIC_KEY VARCHAR2(4000),
     PRIVATE_KEY VARCHAR2(4000)
 );
-
+ALTER TABLE ROOM
+MODIFY (PUBLIC_KEY VARCHAR2(4000), PRIVATE_KEY VARCHAR2(4000));
 /
 
 SELECT
@@ -69,7 +70,8 @@ CREATE TABLE BOOKING (
     BOOKING_HOURS NUMBER,
     FOREIGN KEY(ROOM_ID) REFERENCES ROOM(ROOM_ID)
 );
-
+ALTER TABLE BOOKING
+MODIFY (BOOKING_ROOM_KEY VARCHAR2(4000));
 /
 
 SELECT
@@ -136,39 +138,50 @@ INSERT INTO RECEIPT (
 SELECT
     SYSDATE
 FROM
-    DUAL //======================================================================================== // TABLE STATISTICAL //======================================================================================== CREATE TABLE STATISTICAL( STATISTICAL_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    DUAL ;
+/
+//========================================================================================
+// TABLE STATISTICAL 
+//======================================================================================== 
+CREATE TABLE STATISTICAL( STATISTICAL_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     STATISTICAL_NAME VARCHAR(20),
     RECEIPTS NUMBER,
     TOTAL_PAYMENT NUMBER );
 
 /
-
 SELECT
     *
 FROM
-    STATISTICAL;
-
+    statistical;
 /
 
-INSERT INTO STATISTICAL (
-    STATISTICAL_NAME,
-    RECEIPTS,
-    TOTAL_PAYMENT
-) VALUES (
-    TO_CHAR(SYSDATE, 'MONTH'),
-    1,
-    10000
-);
-
+    INSERT INTO statistical (
+        statistical_name,
+        receipts,
+        total_payment
+    ) VALUES (
+        to_char(sysdate, 'MONTH'),
+        1,
+        10000
+    );
 /
 
 //========================================================================================
 
-SELECT
-    *
-FROM
-    ROOM
-WHERE
-    ROOM.ROOM_NAME LIKE '%'
-                        || ''
-                        || '';
+/
+//========================================================================================
+// TABLE USER_INFOR
+//======================================================================================== 
+CREATE TABLE USER_INFOR ( 
+    USER_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    USERNAME VARCHAR2(20) NOT NULL,
+    MAIL NVARCHAR2(100) NOT NULL,
+    MAIL_PASSWORD NVARCHAR2(2000)
+);
+ALTER TABLE USER_INFOR
+MODIFY (MAIL_PASSWORD NVARCHAR2(2000));
+/
+
+
+
+//========================================================================================

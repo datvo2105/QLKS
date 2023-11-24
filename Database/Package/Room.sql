@@ -20,12 +20,12 @@ CREATE OR REPLACE PACKAGE ROOM_PKG IS
     PROCEDURE DELETE_ROOM(
         ROOM_ID_PARAM IN NUMBER
     );
-    
 END ROOM_PKG;
 /
+
 CREATE OR REPLACE PACKAGE BODY ROOM_PKG IS
---==========================================================
---====================CREATE ROOM===========================
+ --==========================================================
+ --====================CREATE ROOM===========================
     PROCEDURE INSERT_ROOM(
         ROOM_NAME IN VARCHAR2,
         STATUS IN VARCHAR2,
@@ -43,8 +43,8 @@ CREATE OR REPLACE PACKAGE BODY ROOM_PKG IS
         );
         COMMIT;
     END INSERT_ROOM;
---==========================================================
---====================UPDATE ROOM===========================
+ --==========================================================
+ --====================UPDATE ROOM===========================
     PROCEDURE UPDATE_ROOM(
         ROOM_ID_PARAM IN NUMBER,
         ROOM_NAME_PARAM IN VARCHAR2,
@@ -65,8 +65,8 @@ CREATE OR REPLACE PACKAGE BODY ROOM_PKG IS
             ROOM_ID = ROOM_ID_PARAM;
         COMMIT;
     END UPDATE_ROOM;
---==========================================================
---====================DELETE ROOM===========================
+ --==========================================================
+ --====================DELETE ROOM===========================
     PROCEDURE DELETE_ROOM(
         ROOM_ID_PARAM IN NUMBER
     ) IS
@@ -74,7 +74,9 @@ CREATE OR REPLACE PACKAGE BODY ROOM_PKG IS
         DELETE FROM DEV.ROOM
         WHERE
             DEV.ROOM.ROOM_ID= ROOM_ID_PARAM;
+        COMMIT;
     END DELETE_ROOM;
 END ROOM_PKG;
 /
+
 --==========================================================
