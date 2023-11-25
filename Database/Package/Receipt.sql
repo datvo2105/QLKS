@@ -3,7 +3,7 @@
 CREATE OR REPLACE PACKAGE RECEIPT_PKG IS
 
     PROCEDURE INSERT_RECEIPT (
-        CREATED IN DATE,
+        CREATED_PARAM IN STRING,
         BOOKING_ID IN NUMBER,
         TOTAL_HOURS IN NUMBER,
         PAYMENT IN NUMBER
@@ -19,7 +19,7 @@ CREATE OR REPLACE PACKAGE BODY RECEIPT_PKG IS
  --==========================================================
  --====================CREATE RECEIPT===========================
     PROCEDURE INSERT_RECEIPT (
-        CREATED IN DATE,
+        CREATED_PARAM IN STRING,
         BOOKING_ID IN NUMBER,
         TOTAL_HOURS IN NUMBER,
         PAYMENT IN NUMBER
@@ -31,7 +31,7 @@ CREATE OR REPLACE PACKAGE BODY RECEIPT_PKG IS
             TOTAL_HOURS,
             PAYMENT
         ) VALUES (
-            CREATED,
+            TO_DATE(CREATED_PARAM, 'HH24:MI:SS dd/MM/yyyy'),
             BOOKING_ID,
             TOTAL_HOURS,
             PAYMENT
@@ -53,16 +53,3 @@ END RECEIPT_PKG;
 /
 
 --==========================================================
-SELECT
-    *
-FROM
-    ROOM;
-
-SELECT
-    *
-FROM
-    BOOKING;
-
-CALL BOOKING_PKG.INSERT_BOOKING('Booking 02', 'test', 'DEV', 2, 2.5);
-
-CALL BOOKING_PKG.UPDATE_BOOKING(21, 'BOOKING 02', 'test', 'DEV', 2, 2.5);

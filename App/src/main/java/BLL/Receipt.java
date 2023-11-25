@@ -4,33 +4,34 @@
  */
 package BLL;
 
-import java.util.Date;
-
 /**
  *
  * @author vogiadat
  */
 public class Receipt {
 	int id;
-	Date created;
+	String created;
 	int bookingId;
 	double hours;
 	double payment;
+	String user;
 
 	public Receipt() {
 	}
 
 	public Receipt(
 	int id,
-	Date created,
+	String created,
 	int bookingId,
 	double hours,
-	double payment) {
+	double payment,
+	String user) {
 		this.id = id;
 		this.created = created;
 		this.bookingId = bookingId;
 		this.hours = hours;
 		this.payment = payment;
+		this.user = user;
 	}
 
 	public int getId() {
@@ -42,12 +43,12 @@ public class Receipt {
 		this.id = id;
 	}
 
-	public Date getCreated() {
+	public String getCreated() {
 		return created;
 	}
 
 	public void setCreated(
-	Date created) {
+	String created) {
 		this.created = created;
 	}
 
@@ -77,6 +78,14 @@ public class Receipt {
 	double payment) {
 		this.payment = payment;
 	}
-	
-	
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(
+	String user) {
+		this.user = user;
+	}
+
 }

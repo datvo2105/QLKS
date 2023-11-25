@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class User {
 
 	private String sql = "";
-	private Connection conn = DB.getConnect();
+	private final Connection conn = DB.getConnect();
 
 	public List<BLL.User> getAllUser(String search) {
 		sql = "SELECT * FROM USER_INFOR WHERE USERNAME LIKE ?";

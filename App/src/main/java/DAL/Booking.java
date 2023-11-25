@@ -16,7 +16,7 @@ import java.util.List;
 public class Booking {
 
 	private String sql = "";
-	private Connection conn = DB.getConnect();
+	private final Connection conn = DB.getConnect();
 
 	public List<BLL.Booking> getAllBooking(String search) {
 		sql = "SELECT * FROM BOOKING WHERE BOOKING.USERNAME LIKE ?";

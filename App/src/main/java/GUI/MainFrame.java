@@ -7,6 +7,7 @@ package GUI;
 import BLL.AES;
 import BLL.DB;
 import BLL.RSA;
+import BLL.Receipt;
 import BLL.User;
 import com.amdelamar.jhash.Hash;
 import com.amdelamar.jhash.exception.InvalidHashException;
@@ -17,7 +18,13 @@ import java.awt.HeadlessException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,22 +80,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private DAL.User User = new DAL.User();
 	private BLL.User initUser = User.getInforUser();
 
-//	private BLL.User getUserFromFormUser() {
-//		try {
-//			int roleId = user_txtRole.getSelectedIndex() + 1;
-//			return new BLL.User(
-//				Integer.parseInt(
-//					!user_txtUserId.getText().isEmpty() ? user_txtUserId.getText() : "-1"),
-//				user_txtUsername.getText(),
-//				user_txtPassword.getText(),
-//				user_txtEmail.getText(),
-//				roleId,
-//				user_txtRole.getSelectedItem().toString()
-//			);
-//		} catch (NumberFormatException e) {
-//			return null;
-//		}
-//	}
 	private BLL.User getUserOfForm() {
 		try {
 			int selectedRow = user_list.getSelectedRow();
@@ -98,15 +89,20 @@ public class MainFrame extends javax.swing.JFrame {
 			return null;
 		}
 	}
-//
-//	private void mapUserInputUser(BLL.User user) {
-//		user_txtUserId.setText(String.valueOf(user.getId()));
-//		user_txtEmail.setText(user.getEmail());
-//		user_txtRole.setSelectedItem(user.getRole_name().substring(5));
-//		user_txtUsername.setText(user.getUsername());
-//		user_txtPassword.setText(user.getPassword());
-//	}
 
+	// Receipt
+	private List<BLL.Receipt> listReceipt = new ArrayList<>();
+	private BLL.Receipt receiptSelected = null;
+	private DAL.Receipt Receipt = new DAL.Receipt();
+
+//	private BLL.Receipt getInitReceipt() {
+//		try {
+//		} catch (Exception e) {
+//			return null;
+//		}
+//	}
+	// ==================================================================================
+	// ==================================================================================
 	CardLayout cardLayout;
 
 	public MainFrame() {
@@ -166,16 +162,20 @@ public class MainFrame extends javax.swing.JFrame {
 //				user.getRole_name()});
 //		}
 
-		// Init User
-//		model = (DefaultTableModel) user_list.getModel();
-//		model.setRowCount(0);
-//		for (BLL.User user : users) {
-//			model.addRow(new Object[]{
-//				user.getId(),
-//				user.getUsername(),
-//				user.getEmail(),
-//				user.getRole_name()});
-//		}
+		// Receipt 
+		listReceipt = Receipt.getAllReceipt("");
+		model = (DefaultTableModel) receipt_list.getModel();
+		model.setRowCount(0);
+		for (BLL.Receipt receipt : listReceipt) {
+			model.addRow(new Object[]{
+				receipt.getId(),
+				receipt.getCreated(),
+				receipt.getBookingId(),
+				receipt.getHours(),
+				receipt.getPayment()
+			});
+		}
+
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class MainFrame extends javax.swing.JFrame {
                 receipt_lbReceipt = new javax.swing.JLabel();
                 receipt_section = new javax.swing.JSplitPane();
                 receipt_table = new javax.swing.JScrollPane();
-                receipt_listReceipt = new javax.swing.JTable();
+                receipt_list = new javax.swing.JTable();
                 receipt_infor = new javax.swing.JPanel();
                 receipt_lbInfor = new javax.swing.JLabel();
                 receipt_sepInfor = new javax.swing.JSeparator();
@@ -441,7 +441,6 @@ public class MainFrame extends javax.swing.JFrame {
                                 sidebar_staffMousePressed(evt);
                         }
                 });
-                sidebar_staff.setVisible(false);
 
                 sidebar_lbStaff.setBackground(new java.awt.Color(133, 212, 241));
                 sidebar_lbStaff.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
@@ -625,7 +624,7 @@ public class MainFrame extends javax.swing.JFrame {
                         content_homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_homeLayout.createSequentialGroup()
                                 .addGap(25, 25, 25)
-                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
                                 .addGap(174, 174, 174))
                 );
 
@@ -813,7 +812,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(booking_txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(booking_txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
                                 .addComponent(booking_btnBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(booking_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -830,7 +829,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(5, 5, 5)
                                 .addGroup(content_bookingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, content_bookingLayout.createSequentialGroup()
-                                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE)
+                                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
                                                 .addContainerGap())
                                         .addGroup(content_bookingLayout.createSequentialGroup()
                                                 .addComponent(booking_section, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -840,9 +839,9 @@ public class MainFrame extends javax.swing.JFrame {
                         content_bookingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_bookingLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, 0)
-                                .addComponent(booking_section, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
+                                .addComponent(booking_section, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
                                 .addGap(5, 5, 5))
                 );
 
@@ -1003,7 +1002,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(room_txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(room_fieldKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 195, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, Short.MAX_VALUE)
                                 .addComponent(room_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5))
                 );
@@ -1031,11 +1030,11 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(content_roomLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(room_lbRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(633, Short.MAX_VALUE))
+                                .addContainerGap(642, Short.MAX_VALUE))
                         .addGroup(content_roomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_roomLayout.createSequentialGroup()
-                                        .addGap(100, 100, 100)
-                                        .addComponent(room_section, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
+                                        .addGap(90, 90, 90)
+                                        .addComponent(room_section, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1054,9 +1053,9 @@ public class MainFrame extends javax.swing.JFrame {
                 receipt_table.setBackground(new java.awt.Color(255, 255, 255));
                 receipt_table.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
-                receipt_listReceipt.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-                receipt_listReceipt.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-                receipt_listReceipt.setModel(new javax.swing.table.DefaultTableModel(
+                receipt_list.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+                receipt_list.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+                receipt_list.setModel(new javax.swing.table.DefaultTableModel(
                         new Object [][] {
                                 {null, null, null, null, null},
                                 {null, null, null, null, null},
@@ -1064,7 +1063,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 {null, null, null, null, null}
                         },
                         new String [] {
-                                "Receipt ID", "Receipt Name", "Room Name", "Total Date", "Total Price"
+                                "Receipt ID", "Created", "Booking Id", "Total Hours", "Payment"
                         }
                 ) {
                         boolean[] canEdit = new boolean [] {
@@ -1075,12 +1074,12 @@ public class MainFrame extends javax.swing.JFrame {
                                 return canEdit [columnIndex];
                         }
                 });
-                receipt_listReceipt.addMouseListener(new java.awt.event.MouseAdapter() {
+                receipt_list.addMouseListener(new java.awt.event.MouseAdapter() {
                         public void mousePressed(java.awt.event.MouseEvent evt) {
-                                receipt_listReceiptMousePressed(evt);
+                                receipt_listMousePressed(evt);
                         }
                 });
-                receipt_table.setViewportView(receipt_listReceipt);
+                receipt_table.setViewportView(receipt_list);
 
                 receipt_section.setLeftComponent(receipt_table);
 
@@ -1178,7 +1177,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(receipt_txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(24, 24, 24)
                                 .addComponent(receipt_txtPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(231, Short.MAX_VALUE))
+                                .addContainerGap(250, Short.MAX_VALUE))
                 );
 
                 receipt_section.setRightComponent(receipt_infor);
@@ -1201,11 +1200,11 @@ public class MainFrame extends javax.swing.JFrame {
                         content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_receiptLayout.createSequentialGroup()
                                 .addComponent(receipt_lbReceipt, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 639, Short.MAX_VALUE))
+                                .addGap(0, 648, Short.MAX_VALUE))
                         .addGroup(content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_receiptLayout.createSequentialGroup()
-                                        .addGap(100, 100, 100)
-                                        .addComponent(receipt_section, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
+                                        .addGap(90, 90, 90)
+                                        .addComponent(receipt_section, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1412,11 +1411,11 @@ public class MainFrame extends javax.swing.JFrame {
                         content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_userLayout.createSequentialGroup()
                                 .addComponent(user_lbUser, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 638, Short.MAX_VALUE))
+                                .addGap(0, 647, Short.MAX_VALUE))
                         .addGroup(content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_userLayout.createSequentialGroup()
                                         .addGap(91, 91, 91)
-                                        .addComponent(user_section, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+                                        .addComponent(user_section, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1499,18 +1498,15 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(infor_sepUser)
                         .addGroup(panel_informationLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
-                                .addComponent(infor_txtBookingStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(4, 4, 4))
-                        .addGroup(panel_informationLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
                                 .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(panel_informationLayout.createSequentialGroup()
-                                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
-                                                .addGap(5, 5, 5))
+                                                .addComponent(infor_txtBookingStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(4, 4, 4))
                                         .addGroup(panel_informationLayout.createSequentialGroup()
                                                 .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
                                                         .addComponent(infor_txtUser, javax.swing.GroupLayout.Alignment.TRAILING)
                                                         .addComponent(infor_txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
                                                         .addComponent(infor_txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1535,7 +1531,7 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addComponent(infor_txtBookingStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
+                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
                                 .addGap(5, 5, 5))
                 );
 
@@ -1586,7 +1582,7 @@ public class MainFrame extends javax.swing.JFrame {
                 panel_mainLayout.setVerticalGroup(
                         panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(panel_content)
-                        .addComponent(panel_sidebar, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
+                        .addComponent(panel_sidebar, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
                         .addGroup(panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(panel_mainLayout.createSequentialGroup()
                                         .addGap(5, 5, 5)
@@ -1615,24 +1611,9 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_user_btnDeleteActionPerformed
 
         private void user_btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnUpdateActionPerformed
-		//		BLL.User userUpdate = getUserFromFormUser();
-		//
-		//		if (userSelected == null || userUpdate == null) {
-		//			return;
-		//		}
-		//
-		//		JOptionPane.showMessageDialog(null, User.updateUser(userUpdate) ? "success" : "fail");
-		//		this.initData();
         }//GEN-LAST:event_user_btnUpdateActionPerformed
 
         private void user_btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnAddActionPerformed
-		//		BLL.User user = getUserFromFormUser();
-		//		if (user == null) {
-		//			return;
-		//		}
-		//
-		//		JOptionPane.showMessageDialog(null, User.createUser(user) ? "success" : "fail");
-		//		this.initData();
         }//GEN-LAST:event_user_btnAddActionPerformed
 
         private void user_btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnSearchActionPerformed
@@ -1644,23 +1625,18 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_user_btnRefreshActionPerformed
 
         private void user_listMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_user_listMousePressed
-		//		userSelected = getUserFromTableUser();
-		//		if (userSelected != null) {
-		//			mapUserInputUser(userSelected);
-		//		}
         }//GEN-LAST:event_user_listMousePressed
 
         private void receipt_btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receipt_btnSearchActionPerformed
-		// TODO add your handling code here:
         }//GEN-LAST:event_receipt_btnSearchActionPerformed
 
         private void receipt_btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receipt_btnRefreshActionPerformed
 		// TODO add your handling code here:
         }//GEN-LAST:event_receipt_btnRefreshActionPerformed
 
-        private void receipt_listReceiptMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_receipt_listReceiptMousePressed
+        private void receipt_listMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_receipt_listMousePressed
 		// TODO add your handling code here:
-        }//GEN-LAST:event_receipt_listReceiptMousePressed
+        }//GEN-LAST:event_receipt_listMousePressed
 
         private void room_btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room_btnCheckOutActionPerformed
 		CardLayout btnAction = (CardLayout) (room_actions.getLayout());
@@ -1677,9 +1653,21 @@ public class MainFrame extends javax.swing.JFrame {
 			room_txtRoomId.setText("");
 			room_txtRoomName.setText("");
 			room_txtKey.setText("");
-			btnAction.show(room_actions, "checkIn");
-			JOptionPane.showMessageDialog(null, "Check-out Success");
-			this.initData();
+
+			if (booking.getStatus().equals("CheckOut")) {
+				SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+
+				BLL.Receipt receipt = new Receipt();
+				receipt.setCreated(formatter.format(new Date()));
+				receipt.setBookingId(booking.getId());
+				receipt.setHours(booking.getHours());
+				receipt.setPayment(roomSelected.getPrice() * booking.getHours());
+				if (Receipt.createReceipt(receipt)) {
+					btnAction.show(room_actions, "checkIn");
+					JOptionPane.showMessageDialog(null, "Check-out Success");
+					this.initData();
+				}
+			}
 		} else {
 
 			JOptionPane.showMessageDialog(null, "Check-out Failed!!");
@@ -2024,7 +2012,7 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JPanel receipt_infor;
         private javax.swing.JLabel receipt_lbInfor;
         private javax.swing.JLabel receipt_lbReceipt;
-        private javax.swing.JTable receipt_listReceipt;
+        private javax.swing.JTable receipt_list;
         private javax.swing.JPanel receipt_searchActions;
         private javax.swing.JSplitPane receipt_section;
         private javax.swing.JSeparator receipt_sepInfor;

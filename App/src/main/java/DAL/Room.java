@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class Room {
 
 	private String sql = "";
-	private Connection conn = DB.getConnect();
+	private final Connection conn = DB.getConnect();
 
 	public List<BLL.Room> getAllRoom(String search) {
 		sql = "SELECT * FROM ROOM WHERE ROOM.ROOM_NAME LIKE ?";
