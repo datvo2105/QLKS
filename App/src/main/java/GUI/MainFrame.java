@@ -65,6 +65,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private List<BLL.Booking> userBooking = new ArrayList<>();
 	private BLL.Booking bookingSelected = null;
 	private final DAL.Booking Booking = new DAL.Booking();
+	private String filterBooking = "";
 
 	// User
 	private List<BLL.User> listUser = new ArrayList<>();
@@ -139,7 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 
 		// List Booking of user
-		userBooking = Booking.getBookingOfUser();
+		userBooking = Booking.getBookingOfUser(filterBooking);
 		model = (DefaultTableModel) infor_listBooking.getModel();
 		model.setRowCount(0);
 		for (BLL.Booking booking : userBooking) {
@@ -265,10 +266,10 @@ public class MainFrame extends javax.swing.JFrame {
                 receipt_btnSearch = new javax.swing.JButton();
                 receipt_sepSearch = new javax.swing.JSeparator();
                 receipt_txtReciptId = new javax.swing.JTextField();
-                receipt_txtReceiptName = new javax.swing.JTextField();
-                receipt_txtRoomName = new javax.swing.JTextField();
-                receipt_txtTotalDate = new javax.swing.JTextField();
-                receipt_txtTotalPrice = new javax.swing.JTextField();
+                receipt_txtCreated = new javax.swing.JTextField();
+                receipt_txtBookingId = new javax.swing.JTextField();
+                receipt_txtHours = new javax.swing.JTextField();
+                receipt_txtPayment = new javax.swing.JTextField();
                 content_user = new javax.swing.JPanel();
                 user_lbUser = new javax.swing.JLabel();
                 user_section = new javax.swing.JSplitPane();
@@ -299,10 +300,10 @@ public class MainFrame extends javax.swing.JFrame {
                 infor_txtPassword = new javax.swing.JPasswordField();
                 infor_btnUpdate = new javax.swing.JButton();
                 infor_sepUser = new javax.swing.JSeparator();
-                infor_actions = new javax.swing.JPanel();
                 infor_btnRefresh = new javax.swing.JButton();
                 infor_table = new javax.swing.JScrollPane();
                 infor_listBooking = new javax.swing.JTable();
+                infor_txtBookingStatus = new javax.swing.JComboBox<>();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
                 setBackground(new java.awt.Color(133, 212, 241));
@@ -1119,21 +1120,21 @@ public class MainFrame extends javax.swing.JFrame {
                 receipt_txtReciptId.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
                 receipt_txtReciptId.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Receipt Id", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
-                receipt_txtReceiptName.setEditable(false);
-                receipt_txtReceiptName.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                receipt_txtReceiptName.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Receipt Name", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+                receipt_txtCreated.setEditable(false);
+                receipt_txtCreated.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                receipt_txtCreated.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Created", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
-                receipt_txtRoomName.setEditable(false);
-                receipt_txtRoomName.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                receipt_txtRoomName.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Room Name", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+                receipt_txtBookingId.setEditable(false);
+                receipt_txtBookingId.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                receipt_txtBookingId.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Booking Id", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
-                receipt_txtTotalDate.setEditable(false);
-                receipt_txtTotalDate.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                receipt_txtTotalDate.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Total Date", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+                receipt_txtHours.setEditable(false);
+                receipt_txtHours.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                receipt_txtHours.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Total Hours", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
-                receipt_txtTotalPrice.setEditable(false);
-                receipt_txtTotalPrice.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                receipt_txtTotalPrice.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Total Price", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+                receipt_txtPayment.setEditable(false);
+                receipt_txtPayment.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                receipt_txtPayment.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Payment", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
                 javax.swing.GroupLayout receipt_inforLayout = new javax.swing.GroupLayout(receipt_infor);
                 receipt_infor.setLayout(receipt_inforLayout);
@@ -1146,12 +1147,12 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGroup(receipt_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(receipt_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
                                         .addComponent(receipt_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(receipt_txtReceiptName)
+                                        .addComponent(receipt_txtCreated)
                                         .addComponent(receipt_txtReciptId, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(receipt_searchActions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(receipt_txtRoomName)
-                                        .addComponent(receipt_txtTotalDate)
-                                        .addComponent(receipt_txtTotalPrice))
+                                        .addComponent(receipt_txtBookingId)
+                                        .addComponent(receipt_txtHours)
+                                        .addComponent(receipt_txtPayment))
                                 .addGap(5, 5, 5))
                 );
                 receipt_inforLayout.setVerticalGroup(
@@ -1170,13 +1171,13 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(receipt_txtReciptId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(receipt_txtReceiptName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(receipt_txtCreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(receipt_txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(receipt_txtBookingId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(receipt_txtTotalDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(receipt_txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(24, 24, 24)
-                                .addComponent(receipt_txtTotalPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(receipt_txtPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(231, Short.MAX_VALUE))
                 );
 
@@ -1451,18 +1452,14 @@ public class MainFrame extends javax.swing.JFrame {
                         }
                 });
 
-                infor_actions.setBackground(new java.awt.Color(255, 255, 255));
-                infor_actions.setPreferredSize(new java.awt.Dimension(100, 30));
-                infor_actions.setLayout(new java.awt.GridLayout(1, 0));
-
                 infor_btnRefresh.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
                 infor_btnRefresh.setText("Refresh");
+                infor_btnRefresh.setPreferredSize(new java.awt.Dimension(80, 42));
                 infor_btnRefresh.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 infor_btnRefreshActionPerformed(evt);
                         }
                 });
-                infor_actions.add(infor_btnRefresh);
 
                 infor_table.setBackground(new java.awt.Color(255, 255, 255));
                 infor_table.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -1489,12 +1486,11 @@ public class MainFrame extends javax.swing.JFrame {
                         }
                 });
                 infor_listBooking.setInheritsPopupMenu(true);
-                infor_listBooking.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mousePressed(java.awt.event.MouseEvent evt) {
-                                infor_listBookingMousePressed(evt);
-                        }
-                });
                 infor_table.setViewportView(infor_listBooking);
+
+                infor_txtBookingStatus.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                infor_txtBookingStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Pending", "CheckIn", "CheckOut" }));
+                infor_txtBookingStatus.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Status", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
                 javax.swing.GroupLayout panel_informationLayout = new javax.swing.GroupLayout(panel_information);
                 panel_information.setLayout(panel_informationLayout);
@@ -1503,14 +1499,23 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(infor_sepUser)
                         .addGroup(panel_informationLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
+                                .addComponent(infor_txtBookingStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4))
+                        .addGroup(panel_informationLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
                                 .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(infor_txtUser, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(infor_txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(infor_txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(infor_btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(infor_actions, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
-                                        .addComponent(infor_table))
-                                .addGap(5, 5, 5))
+                                        .addGroup(panel_informationLayout.createSequentialGroup()
+                                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
+                                                .addGap(5, 5, 5))
+                                        .addGroup(panel_informationLayout.createSequentialGroup()
+                                                .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(infor_txtUser, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(infor_txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(infor_txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(infor_btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(5, 5, 5))))
                 );
                 panel_informationLayout.setVerticalGroup(
                         panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1525,10 +1530,12 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(infor_btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(infor_sepUser, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(8, 8, 8)
-                                .addComponent(infor_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(2, 2, 2)
+                                .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(infor_txtBookingStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
                                 .addGap(5, 5, 5))
                 );
 
@@ -1827,10 +1834,6 @@ public class MainFrame extends javax.swing.JFrame {
 		this.initData();
         }//GEN-LAST:event_booking_btnRefreshActionPerformed
 
-        private void infor_listBookingMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_infor_listBookingMousePressed
-		// TODO add your handling code here:
-        }//GEN-LAST:event_infor_listBookingMousePressed
-
         private void infor_btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infor_btnUpdateActionPerformed
 		userSelected = initUser;
 		if (userSelected == null) {
@@ -1868,6 +1871,7 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_booking_listRoomMousePressed
 
         private void infor_btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infor_btnRefreshActionPerformed
+		filterBooking = String.valueOf(infor_txtBookingStatus.getSelectedItem()).equals("All") ? "" : String.valueOf(infor_txtBookingStatus.getSelectedItem());
 		this.initData();
         }//GEN-LAST:event_infor_btnRefreshActionPerformed
 
@@ -2001,13 +2005,13 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JPanel content_user;
         private javax.swing.JButton home_btnClose;
         private javax.swing.JLabel home_lbHome;
-        private javax.swing.JPanel infor_actions;
         private javax.swing.JButton infor_btnRefresh;
         private javax.swing.JButton infor_btnUpdate;
         private javax.swing.JLabel infor_lbInfor;
         private javax.swing.JTable infor_listBooking;
         private javax.swing.JSeparator infor_sepUser;
         private javax.swing.JScrollPane infor_table;
+        private javax.swing.JComboBox<String> infor_txtBookingStatus;
         private javax.swing.JTextField infor_txtEmail;
         private javax.swing.JTextField infor_txtPassword;
         private javax.swing.JTextField infor_txtUser;
@@ -2026,12 +2030,12 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JSeparator receipt_sepInfor;
         private javax.swing.JSeparator receipt_sepSearch;
         private javax.swing.JScrollPane receipt_table;
-        private javax.swing.JTextField receipt_txtReceiptName;
+        private javax.swing.JTextField receipt_txtBookingId;
+        private javax.swing.JTextField receipt_txtCreated;
+        private javax.swing.JTextField receipt_txtHours;
+        private javax.swing.JTextField receipt_txtPayment;
         private javax.swing.JTextField receipt_txtReciptId;
-        private javax.swing.JTextField receipt_txtRoomName;
         private javax.swing.JTextField receipt_txtSearch;
-        private javax.swing.JTextField receipt_txtTotalDate;
-        private javax.swing.JTextField receipt_txtTotalPrice;
         private javax.swing.JPanel room_actions;
         private javax.swing.JButton room_btnCheckIn;
         private javax.swing.JButton room_btnCheckOut;

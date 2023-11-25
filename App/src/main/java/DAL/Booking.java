@@ -47,14 +47,15 @@ public class Booking {
 		return list;
 	}
 
-	public List<BLL.Booking> getBookingOfUser() {
-		sql = "SELECT B.*, R.ROOM_NAME FROM DEV.BOOKING B JOIN DEV.ROOM R ON B.ROOM_ID = R.ROOM_ID WHERE USERNAME LIKE ?";
+	public List<BLL.Booking> getBookingOfUser(String filter) {
+		sql = "SELECT B.*, R.ROOM_NAME FROM DEV.BOOKING B JOIN DEV.ROOM R ON B.ROOM_ID = R.ROOM_ID WHERE USERNAME LIKE ? AND B.STATUS LIKE ?";
 
 		List list = new ArrayList<>();
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
 				sm.setString(1, "%" + DB.user.toUpperCase() + "%");
+				sm.setString(2, "%" + filter + "%");
 				ResultSet rs = sm.executeQuery();
 
 				while (rs.next()) {
