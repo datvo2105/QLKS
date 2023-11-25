@@ -48,7 +48,7 @@ public class Booking {
 	}
 
 	public List<BLL.Booking> getBookingOfUser() {
-		sql = "SELECT B*, R.ROOM_NAME FROM DEV.BOOKING B JOIN DEV.ROOM R ON B.ROOM_ID = R.ROOM_ID WHERE USERNAME LIKE ?";
+		sql = "SELECT B.*, R.ROOM_NAME FROM DEV.BOOKING B JOIN DEV.ROOM R ON B.ROOM_ID = R.ROOM_ID WHERE USERNAME LIKE ?";
 
 		List list = new ArrayList<>();
 		if (conn != null) {
@@ -66,6 +66,7 @@ public class Booking {
 					booking.setRoomId(rs.getInt("ROOM_ID"));
 					booking.setRoomName(rs.getString("ROOM_NAME"));
 					booking.setHours(rs.getDouble("BOOKING_HOURS"));
+					booking.setStatus(rs.getString("STATUS"));
 					list.add(booking);
 				}
 			} catch (SQLException e) {
@@ -104,7 +105,7 @@ public class Booking {
 	}
 
 	public Boolean updateBooking(BLL.Booking booking) {
-		sql = "{CALL DEV.BOOKING_PKG.UPDATE_BOOKING( ?, ?, ?, ?, ?, ?)}";
+		sql = "{CALL DEV.BOOKING_PKG.UPDATE_BOOKING( ?, ?, ?, ?, ?, ?, ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -115,6 +116,7 @@ public class Booking {
 				sm.setString(4, booking.getUser());
 				sm.setInt(5, booking.getRoomId());
 				sm.setDouble(6, booking.getHours());
+				sm.setString(7, booking.getStatus());
 
 				int rowsInserted = sm.executeUpdate();
 

@@ -4,8 +4,7 @@
  */
 package DAL;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,67 +17,104 @@ import java.sql.SQLException;
  */
 public class User {
 
-	public List<BLL.User> getUsers(String search) {
-		List list = new ArrayList<>();
-		try {
-			PreparedStatement statement = DB.getConnect().prepareStatement(
-				"SELECT UA.USER_ID, UA.EMAIL, UA.ROLE_ID, R.ROLE_NAME, UA.USERNAME, UA.PASSWORD FROM TABLE(USER_PKG.GET_USER('')) UA JOIN ROLES R ON UA.ROLE_ID = R.ROLE_ID");
-			ResultSet resultSet = statement.executeQuery();
+	private String sql = "";
+	private Connection conn = DB.getConnect();
 
-			while (resultSet.next()) {
-				BLL.User user = new BLL.User();
-				user.setId(resultSet.getInt("USER_ID"));
-				user.setEmail(resultSet.getString("EMAIL"));
-				user.setRole_id(resultSet.getInt("ROLE_ID"));
-				user.setRole_name(resultSet.getString("ROLE_NAME"));
-				user.setUsername(resultSet.getString("USERNAME"));
-				user.setPassword(resultSet.getString("PASSWORD"));
-				list.add(user);
+	public List<BLL.User> getAllUser(String search) {
+		sql = "SELECT * FROM USER_INFOR WHERE USERNAME LIKE ?";
+		List list = new ArrayList<>();
+		if (conn != null) {
+			try {
+				PreparedStatement sm = conn.prepareStatement(sql);
+				sm.setString(1, '%' + search + '%');
+
+				ResultSet rs = sm.executeQuery();
+
+				while (rs.next()) {
+					BLL.User user = new BLL.User();
+					user.setId(rs.getInt("USER_ID"));
+					user.setUsername(rs.getString("USERNAME"));
+					user.setEmail(rs.getString("MAIL"));
+					user.setPassword(rs.getString("MAIL_PASSWORD"));
+					list.add(user);
+				}
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
 			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
 		return list;
 	}
 
-	public Boolean createUser(BLL.User user) {
-		try {
-			PreparedStatement statement = DB.getConnect().prepareStatement(
-				"{CALL USER_PKG.INSERT_USER(?, ?, ?, ?, ?)}");
+	public BLL.User getInforUser() {
+		sql = "SELECT * FROM USER_INFOR WHERE USERNAME LIKE ?";
+		BLL.User user = new BLL.User();
 
-			statement.setInt(0, user.getId());
-			statement.setString(1, user.getUsername());
-			statement.setString(2, user.getPassword());
-			statement.setString(3, user.getEmail());
-			statement.setInt(4, user.getRole_id());
+		if (conn != null) {
+			try {
+				PreparedStatement sm = conn.prepareStatement(sql);
+				sm.setString(1, "%" + DB.user.toUpperCase() + "%");
+				ResultSet rs = sm.executeQuery();
 
-			int rowsInserted = statement.executeUpdate();
+				while (rs.next()) {
+					user.setId(rs.getInt("USER_ID"));
+					user.setUsername(rs.getString("USERNAME"));
+					user.setEmail(rs.getString("MAIL"));
+					user.setPassword(rs.getString("MAIL_PASSWORD"));
+				}
 
-			return rowsInserted > 0;
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			} catch (SQLException e) {
+				System.err.println(e);
+			}
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
-		return false;
+		return user;
 	}
+//	public Boolean createUser(BLL.User user) {
+//		try {
+//			PreparedStatement statement = DB.getConnect().prepareStatement(
+//				"{CALL USER_PKG.INSERT_USER(?, ?, ?, ?, ?)}");
+//
+//			statement.setInt(0, user.getId());
+//			statement.setString(1, user.getUsername());
+//			statement.setString(2, user.getPassword());
+//			statement.setString(3, user.getEmail());
+//			statement.setInt(4, user.getRole_id());
+//
+//			int rowsInserted = statement.executeUpdate();
+//
+//			return rowsInserted > 0;
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//
+//		return false;
+//	}
 
 	public Boolean updateUser(BLL.User user) {
-		try {
-			PreparedStatement statement = DB.getConnect().prepareStatement(
-				"{CALL ROOM_PKG.UPDATE_ROOM(?,?,?,?,?)}");
+		sql = "CALL DEV.USER_PKG.UPDATE_USER( ?, ?, ?, ?, ?)";
+		if (conn != null) {
+			try {
+				PreparedStatement sm = conn.prepareStatement(sql);
 
-			statement.setInt(1, user.getId());
-			statement.setString(2, user.getUsername());
-			statement.setString(3, user.getPassword());
-			statement.setString(4,user.getEmail());
-			statement.setInt(5, user.getRole_id());
+				sm.setInt(1, user.getId());
+				sm.setString(2, user.getUsername());
+				sm.setString(3, user.getEmail());
+				sm.setString(4, user.getPassword());
+				sm.setString(5, user.getKey());
 
-			int rowsInserted = statement.executeUpdate();
+				sm.executeUpdate();
 
-			return rowsInserted > 0;
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+				return true;
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} else {
+			System.out.println("Connect error!!!");
 		}
 
 		return false;

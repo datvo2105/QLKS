@@ -7,16 +7,23 @@ package GUI;
 import BLL.AES;
 import BLL.DB;
 import BLL.RSA;
+import BLL.User;
+import com.amdelamar.jhash.Hash;
+import com.amdelamar.jhash.exception.InvalidHashException;
 
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.HeadlessException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,6 +39,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * Creates new form MainFrame
 	 */
 	private Connection conn;
+	private char[] pepper = "vogiadat".toCharArray();
 
 	// Room
 	private List<BLL.Room> listRoom = new ArrayList<>();
@@ -42,7 +50,7 @@ public class MainFrame extends javax.swing.JFrame {
 		try {
 			return new BLL.Room(
 			Integer.parseInt(!booking_txtRoomId.getText().isEmpty() ? booking_txtRoomId.getText() : "-1"),
-			booking_txtRoomName.getText(),
+			booking_txtRoomName.getText().toUpperCase(),
 			booking_txtRoomStatus.getSelectedItem().toString(),
 			Double.parseDouble(booking_txtPrice.getText()),
 			"",
@@ -54,14 +62,16 @@ public class MainFrame extends javax.swing.JFrame {
 
 	// Booking
 	private List<BLL.Booking> listBooking = new ArrayList<>();
+	private List<BLL.Booking> userBooking = new ArrayList<>();
 	private BLL.Booking bookingSelected = null;
 	private final DAL.Booking Booking = new DAL.Booking();
 
 	// User
-//	private List<BLL.User> users = new ArrayList<>();
-//	private BLL.User userSelected = null;
-//	private DAL.User User = new DAL.User();
-//
+	private List<BLL.User> listUser = new ArrayList<>();
+	private BLL.User userSelected = null;
+	private DAL.User User = new DAL.User();
+	private BLL.User initUser = User.getInforUser();
+
 //	private BLL.User getUserFromFormUser() {
 //		try {
 //			int roleId = user_txtRole.getSelectedIndex() + 1;
@@ -78,16 +88,15 @@ public class MainFrame extends javax.swing.JFrame {
 //			return null;
 //		}
 //	}
-//
-//	private BLL.User getUserFromTableUser() {
-//		try {
-//			int selectedRow = user_list.getSelectedRow();
-//			int id = (int) user_list.getValueAt(selectedRow, 0);
-//			return users.stream().filter(user -> user.getId() == id).findFirst().get();
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
+	private BLL.User getUserOfForm() {
+		try {
+			int selectedRow = user_list.getSelectedRow();
+			int id = (int) user_list.getValueAt(selectedRow, 0);
+			return listUser.stream().filter(user -> user.getId() == id).findFirst().get();
+		} catch (Exception e) {
+			return null;
+		}
+	}
 //
 //	private void mapUserInputUser(BLL.User user) {
 //		user_txtUserId.setText(String.valueOf(user.getId()));
@@ -96,7 +105,7 @@ public class MainFrame extends javax.swing.JFrame {
 //		user_txtUsername.setText(user.getUsername());
 //		user_txtPassword.setText(user.getPassword());
 //	}
-	// User
+
 	CardLayout cardLayout;
 
 	public MainFrame() {
@@ -129,22 +138,34 @@ public class MainFrame extends javax.swing.JFrame {
 			});
 		}
 
-		// List Booking
-		listBooking = Booking.getAllBooking("");
+		// List Booking of user
+		userBooking = Booking.getBookingOfUser();
 		model = (DefaultTableModel) infor_listBooking.getModel();
 		model.setRowCount(0);
-		for (BLL.Booking booking : listBooking) {
+		for (BLL.Booking booking : userBooking) {
 			model.addRow(new Object[]{
 				booking.getId(),
 				booking.getName(),
-				booking.getRoomId(),
-				//				booking.getRoomName(),
+				booking.getRoomName(),
 				booking.getRoomKey(),
-				booking.getHours()
+				booking.getHours(),
+				booking.getStatus()
 			});
 		}
+
 		// User
-//		users = User.getUsers("");
+		listUser = User.getAllUser("");
+//		model = (DefaultTableModel) .getModel();
+//		model.setRowCount(0);
+//		for (BLL.User user : users) {
+//			model.addRow(new Object[]{
+//				user.getId(),
+//				user.getUsername(),
+//				user.getEmail(),
+//				user.getRole_name()});
+//		}
+
+		// Init User
 //		model = (DefaultTableModel) user_list.getModel();
 //		model.setRowCount(0);
 //		for (BLL.User user : users) {
@@ -275,7 +296,7 @@ public class MainFrame extends javax.swing.JFrame {
                 panel_information = new javax.swing.JPanel();
                 infor_txtUser = new javax.swing.JTextField();
                 infor_txtEmail = new javax.swing.JTextField();
-                infor_txtPassword = new javax.swing.JTextField();
+                infor_txtPassword = new javax.swing.JPasswordField();
                 infor_btnUpdate = new javax.swing.JButton();
                 infor_sepUser = new javax.swing.JSeparator();
                 infor_actions = new javax.swing.JPanel();
@@ -755,36 +776,17 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(booking_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(booking_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(booking_inforLayout.createSequentialGroup()
-                                                .addComponent(booking_btnBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(5, 5, 5))
-                                        .addGroup(booking_inforLayout.createSequentialGroup()
-                                                .addGroup(booking_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(booking_sepSearch)
-                                                        .addComponent(booking_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(booking_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(booking_actions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addGap(5, 5, 5))))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, booking_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(booking_txtRoomId)
-                                .addGap(5, 5, 5))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, booking_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(booking_txtRoomStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(5, 5, 5))
-                        .addGroup(booking_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(booking_txtHours)
-                                .addGap(5, 5, 5))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, booking_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(booking_txtRoomName)
-                                .addGap(5, 5, 5))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, booking_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(booking_txtPrice)
+                                        .addComponent(booking_btnBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_sepSearch)
+                                        .addComponent(booking_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_actions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_txtRoomId, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(booking_txtRoomStatus, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_txtHours)
+                                        .addComponent(booking_txtRoomName, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(booking_txtPrice, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addGap(5, 5, 5))
                 );
                 booking_inforLayout.setVerticalGroup(
@@ -937,26 +939,31 @@ public class MainFrame extends javax.swing.JFrame {
                 room_fieldKey.setViewportView(room_txtKey);
 
                 room_actions.setBackground(new java.awt.Color(255, 255, 255));
+                room_actions.setName("room_actions"); // NOI18N
                 room_actions.setPreferredSize(new java.awt.Dimension(88, 30));
                 room_actions.setLayout(new java.awt.CardLayout());
 
                 room_btnCheckIn.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
                 room_btnCheckIn.setText("Check-in");
+                room_btnCheckIn.setName("checkIn"); // NOI18N
                 room_btnCheckIn.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 room_btnCheckInActionPerformed(evt);
                         }
                 });
-                room_actions.add(room_btnCheckIn, "card2");
+                room_actions.add(room_btnCheckIn, "checkIn");
+                room_btnCheckIn.getAccessibleContext().setAccessibleName("checkIn");
 
                 room_btnCheckOut.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
                 room_btnCheckOut.setText("Check-out");
+                room_btnCheckOut.setName("checkOut"); // NOI18N
                 room_btnCheckOut.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 room_btnCheckOutActionPerformed(evt);
                         }
                 });
-                room_actions.add(room_btnCheckOut, "card3");
+                room_actions.add(room_btnCheckOut, "checkOut");
+                room_btnCheckOut.getAccessibleContext().setAccessibleName("checkOut");
 
                 javax.swing.GroupLayout room_inforLayout = new javax.swing.GroupLayout(room_infor);
                 room_infor.setLayout(room_inforLayout);
@@ -972,11 +979,8 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addComponent(room_actions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(room_txtRoomName)
                                         .addComponent(room_fieldKey)
-                                        .addComponent(room_searchActions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(5, 5, 5))
-                        .addGroup(room_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(room_txtRoomId)
+                                        .addComponent(room_searchActions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(room_txtRoomId))
                                 .addGap(5, 5, 5))
                 );
                 room_inforLayout.setVerticalGroup(
@@ -1002,6 +1006,8 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(room_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5))
                 );
+
+                room_actions.getAccessibleContext().setAccessibleName("room_actions");
 
                 room_section.setRightComponent(room_infor);
 
@@ -1088,6 +1094,7 @@ public class MainFrame extends javax.swing.JFrame {
                 receipt_txtSearch.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
                 receipt_txtSearch.setPreferredSize(new java.awt.Dimension(64, 30));
 
+                receipt_searchActions.setPreferredSize(new java.awt.Dimension(152, 30));
                 receipt_searchActions.setLayout(new java.awt.GridLayout(1, 0));
 
                 receipt_btnRefresh.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -1158,7 +1165,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(receipt_txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(receipt_searchActions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(receipt_sepSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(receipt_txtReciptId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1170,7 +1177,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(receipt_txtTotalDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(24, 24, 24)
                                 .addComponent(receipt_txtTotalPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+                                .addContainerGap(231, Short.MAX_VALUE))
                 );
 
                 receipt_section.setRightComponent(receipt_infor);
@@ -1464,23 +1471,24 @@ public class MainFrame extends javax.swing.JFrame {
                 infor_listBooking.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 infor_listBooking.setModel(new javax.swing.table.DefaultTableModel(
                         new Object [][] {
-                                {null, null, null, null, null},
-                                {null, null, null, null, null},
-                                {null, null, null, null, null},
-                                {null, null, null, null, null}
+                                {null, null, null, null, null, null},
+                                {null, null, null, null, null, null},
+                                {null, null, null, null, null, null},
+                                {null, null, null, null, null, null}
                         },
                         new String [] {
-                                "Booking ID", "Booking Name", "Room", "Room Key", "Booking Hours"
+                                "Booking ID", "Booking Name", "Room", "Room Key", "Booking Hours", "Status"
                         }
                 ) {
                         boolean[] canEdit = new boolean [] {
-                                false, false, false, true, false
+                                false, false, false, true, false, false
                         };
 
                         public boolean isCellEditable(int rowIndex, int columnIndex) {
                                 return canEdit [columnIndex];
                         }
                 });
+                infor_listBooking.setInheritsPopupMenu(true);
                 infor_listBooking.addMouseListener(new java.awt.event.MouseAdapter() {
                         public void mousePressed(java.awt.event.MouseEvent evt) {
                                 infor_listBookingMousePressed(evt);
@@ -1525,6 +1533,7 @@ public class MainFrame extends javax.swing.JFrame {
                 );
 
                 infor_txtUser.setText(DB.user.toUpperCase());
+                infor_txtEmail.setText(initUser.getEmail());
 
                 javax.swing.GroupLayout content_informationLayout = new javax.swing.GroupLayout(content_information);
                 content_information.setLayout(content_informationLayout);
@@ -1647,11 +1656,33 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_receipt_listReceiptMousePressed
 
         private void room_btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room_btnCheckOutActionPerformed
-		// TODO add your handling code here:
+		CardLayout btnAction = (CardLayout) (room_actions.getLayout());
+		int roomId = Integer.parseInt(room_txtRoomId.getText());
+		roomSelected = listRoom.stream().filter(r -> r.getId() == roomId).findFirst().get();
+		BLL.Booking booking = userBooking.stream().filter(b -> b.getRoomKey().equals(room_txtKey.getText())).findFirst().get();
+
+		roomSelected.setPubKey("");
+		roomSelected.setPriKey("");
+		roomSelected.setStatus("Empty");
+		booking.setStatus("CheckOut");
+
+		if (Room.updateRoom(roomSelected) && Booking.updateBooking(booking)) {
+			room_txtRoomId.setText("");
+			room_txtRoomName.setText("");
+			room_txtKey.setText("");
+			btnAction.show(room_actions, "checkIn");
+			JOptionPane.showMessageDialog(null, "Check-out Success");
+			this.initData();
+		} else {
+
+			JOptionPane.showMessageDialog(null, "Check-out Failed!!");
+		}
         }//GEN-LAST:event_room_btnCheckOutActionPerformed
 
         private void room_btnCheckInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room_btnCheckInActionPerformed
+		CardLayout btnAction = (CardLayout) (room_actions.getLayout());
 		BLL.Room room = roomSelected;
+		BLL.Booking booking = userBooking.stream().filter(b -> b.getRoomKey().equals(room_txtKey.getText())).findFirst().get();
 
 		if (room == null) {
 			return;
@@ -1660,13 +1691,16 @@ public class MainFrame extends javax.swing.JFrame {
 		try {
 			RSA rsa = new RSA();
 			String priKey = room.getPriKey();
-			String checkRoom = rsa.decryptRSA(priKey, room_txtKey.getText());
-			if (room.getName().equalsIgnoreCase(checkRoom)) {
-				room_txtKey.setText("");
-				room_btnCheckIn.setVisible(false);
-				JOptionPane.showMessageDialog(panel_content, "Checkin Success!!");
-			}
+			String roomId = String.valueOf(room.getId());
 
+			String roomKey = rsa.decryptRSA(priKey, room_txtKey.getText());
+			if (Hash.password(roomId.toCharArray()).pepper(pepper).algorithm(com.amdelamar.jhash.algorithms.Type.BCRYPT).verify(roomKey)) {
+				booking.setStatus("CheckIn");
+				Booking.updateBooking(booking);
+				btnAction.show(room_actions, "checkOut");
+				JOptionPane.showMessageDialog(panel_content, "Checkin Success!!");
+				this.initData();
+			}
 		} catch (NoSuchAlgorithmException ex) {
 			Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (Exception ex) {
@@ -1722,15 +1756,17 @@ public class MainFrame extends javax.swing.JFrame {
 				booking_txtRoomStatus.setSelectedIndex(1);
 				room.setStatus("Booked");
 				boolean createKey = Room.updateRoom(room);
+				String roomId = String.valueOf(room.getId());
+				String hashRoomId = Hash.password(roomId.toCharArray()).pepper(pepper).algorithm(com.amdelamar.jhash.algorithms.Type.BCRYPT).create();
 				if (createKey) {
 					BLL.Booking booking = new BLL.Booking();
 					booking.setName("BOOKING " + room.getName());
-					booking.setRoomKey(rsa.encryptRSA(pubKey, room.getName()));
+					booking.setRoomKey(rsa.encryptRSA(pubKey, hashRoomId));
 					booking.setUser(DB.user.toUpperCase());
 					booking.setRoomId(room.getId());
 					booking.setHours(Double.parseDouble(booking_txtHours.getText()));
 
-					JOptionPane.showMessageDialog(null, Booking.createBooking(booking) ? "Create success" : "Create fail!");
+					JOptionPane.showMessageDialog(null, Booking.createBooking(booking) ? "Booking success" : "Booking fail!");
 					this.initData();
 				}
 
@@ -1796,7 +1832,24 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_infor_listBookingMousePressed
 
         private void infor_btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infor_btnUpdateActionPerformed
-		// TODO add your handling code here:
+		userSelected = initUser;
+		if (userSelected == null) {
+			return;
+		} else {
+			try {
+				AES aes = new AES();
+				String key = aes.stringKey();
+				String password = infor_txtPassword.getText();
+				userSelected.setEmail(infor_txtEmail.getText());
+				userSelected.setPassword(aes.encryptAES(password, key));
+				userSelected.setKey(key);
+
+				JOptionPane.showMessageDialog(null, User.updateUser(userSelected) ? "Update success" : "Update fail");
+			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
+				Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+
         }//GEN-LAST:event_infor_btnUpdateActionPerformed
 
         private void booking_listRoomMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_booking_listRoomMousePressed
@@ -1817,25 +1870,6 @@ public class MainFrame extends javax.swing.JFrame {
         private void infor_btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infor_btnRefreshActionPerformed
 		this.initData();
         }//GEN-LAST:event_infor_btnRefreshActionPerformed
-
-	private void information_btnUpdateActionPerformed(
-	java.awt.event.ActionEvent evt) {
-		try {
-			AES aes = new AES();
-			String msg = "test msg";
-			String key = aes.stringKey();
-
-			System.out.println("---------------------------------------------------");
-			System.out.println("Key Convert: " + aes.convertToKey(key));
-			System.out.println("Key string: " + key);
-			System.out.println("Key string lenght: " + key.length());
-			System.out.println("---------------------------------------------------");
-			System.out.println("Encryted: " + aes.encryptAES(msg, key));
-			System.out.println("---------------------------------------------------");
-			System.out.println("Decryted: " + aes.decryptAES(aes.encryptAES(msg, key), key));
-		} catch (Exception e) {
-		}
-	}
 
 	private void setSidebarColor(JPanel panel) {
 		panel.setBackground(new Color(133, 212, 241));

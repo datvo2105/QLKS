@@ -42,12 +42,12 @@ public class AES {
 		return new SecretKeySpec(parserByte(key), "AES");
 	}
 
-	public String encryptAES(String password, String stringKey) throws InvalidKeyException {
+	public String encryptAES(String value, String stringKey) throws InvalidKeyException {
 		key = convertToKey(stringKey);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encrypted = null;
 		try {
-			encrypted = cipher.doFinal(password.getBytes());
+			encrypted = cipher.doFinal(value.getBytes());
 		} catch (IllegalBlockSizeException | BadPaddingException ex) {
 			Logger.getLogger(AES.class.getName()).log(Level.SEVERE, null, ex);
 		}
