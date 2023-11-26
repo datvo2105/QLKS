@@ -8,6 +8,7 @@ import java.util.List;
 import BLL.DB;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 public class Room {
 
@@ -15,7 +16,7 @@ public class Room {
 	private final Connection conn = DB.getConnect();
 
 	public List<BLL.Room> getAllRoom(String search) {
-		sql = "SELECT * FROM ROOM WHERE ROOM.ROOM_NAME LIKE ?";
+		sql = "SELECT * FROM DEV.ROOM WHERE ROOM.ROOM_NAME LIKE ?";
 		List list = new ArrayList<>();
 		if (conn != null) {
 			try {
@@ -34,17 +35,17 @@ public class Room {
 					list.add(room);
 				}
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 
 		return list;
 	}
 
 	public Boolean createRoom(BLL.Room room) {
-		sql = "{CALL DEV.ROOM_PKG.INSERT_ROOM( ?, ?, ?)}";
+		sql = "{CALL DEV.INSERT_ROOM( ?, ?, ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -57,17 +58,17 @@ public class Room {
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 
 		return false;
 	}
 
 	public Boolean updateRoom(BLL.Room room) {
-		sql = "{CALL DEV.ROOM_PKG.UPDATE_ROOM( ?, ?, ?, ?, ?, ?)}";
+		sql = "{CALL DEV.UPDATE_ROOM( ?, ?, ?, ?, ?, ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -83,17 +84,17 @@ public class Room {
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 
 		return false;
 	}
 
 	public Boolean deleteRoom(BLL.Room room) {
-		sql = "{CALL ROOM_PKG.DELETE_ROOM( ?)}";
+		sql = "{CALL DEV.DELETE_ROOM( ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -104,11 +105,10 @@ public class Room {
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
-
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 		return false;
 	}

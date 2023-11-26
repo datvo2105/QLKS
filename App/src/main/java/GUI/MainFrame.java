@@ -8,9 +8,7 @@ import BLL.AES;
 import BLL.DB;
 import BLL.RSA;
 import BLL.Receipt;
-import BLL.User;
 import com.amdelamar.jhash.Hash;
-import com.amdelamar.jhash.exception.InvalidHashException;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -19,10 +17,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +40,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * Creates new form MainFrame
 	 */
 	private Connection conn;
-	private char[] pepper = "vogiadat".toCharArray();
+	private final char[] pepper = "vogiadat".toCharArray();
 
 	// Room
 	private List<BLL.Room> listRoom = new ArrayList<>();
@@ -75,12 +69,12 @@ public class MainFrame extends javax.swing.JFrame {
 	private String filterBooking = "";
 
 	// User
-	private List<BLL.User> listUser = new ArrayList<>();
-	private BLL.User userSelected = null;
-	private DAL.User User = new DAL.User();
-	private BLL.User initUser = User.getInforUser();
+	private List<BLL.Infor> listUser = new ArrayList<>();
+	private BLL.Infor userSelected = null;
+	private DAL.Infor User = new DAL.Infor();
+	private BLL.Infor initUser = null;
 
-	private BLL.User getUserOfForm() {
+	private BLL.Infor getUserOfForm() {
 		try {
 			int selectedRow = user_list.getSelectedRow();
 			int id = (int) user_list.getValueAt(selectedRow, 0);
@@ -136,7 +130,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 
 		// List Booking of user
-		userBooking = Booking.getBookingOfUser(filterBooking);
+		userBooking = Booking.getAllBooking(DB.user.toUpperCase(), filterBooking);
 		model = (DefaultTableModel) infor_listBooking.getModel();
 		model.setRowCount(0);
 		for (BLL.Booking booking : userBooking) {
@@ -151,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 
 		// User
-		listUser = User.getAllUser("");
+		listUser = User.getAllInfor("");
 //		model = (DefaultTableModel) .getModel();
 //		model.setRowCount(0);
 //		for (BLL.User user : users) {
@@ -161,9 +155,11 @@ public class MainFrame extends javax.swing.JFrame {
 //				user.getEmail(),
 //				user.getRole_name()});
 //		}
+//		model = (DefaultTableModel) .getModel();
+//		model.setRowCount(0);
 
 		// Receipt 
-		listReceipt = Receipt.getAllReceipt("");
+		listReceipt = Receipt.getAllReceipt(DB.isUser ? DB.user.toUpperCase() : "");
 		model = (DefaultTableModel) receipt_list.getModel();
 		model.setRowCount(0);
 		for (BLL.Receipt receipt : listReceipt) {
@@ -175,7 +171,7 @@ public class MainFrame extends javax.swing.JFrame {
 				receipt.getPayment()
 			});
 		}
-
+		
 	}
 
 	/**
@@ -196,10 +192,10 @@ public class MainFrame extends javax.swing.JFrame {
                 sidebar_lbBooking = new javax.swing.JLabel();
                 sidebar_room = new javax.swing.JPanel();
                 sidebar_lbRoom = new javax.swing.JLabel();
-                sidebar_receipt = new javax.swing.JPanel();
-                sidebar_lbReceipt = new javax.swing.JLabel();
                 sidebar_staff = new javax.swing.JPanel();
                 sidebar_lbStaff = new javax.swing.JLabel();
+                sidebar_receipt = new javax.swing.JPanel();
+                sidebar_lbReceipt = new javax.swing.JLabel();
                 sidebar_sepSidabar = new javax.swing.JSeparator();
                 sidebar_information = new javax.swing.JPanel();
                 sidebar_lbInformation = new javax.swing.JLabel();
@@ -368,7 +364,7 @@ public class MainFrame extends javax.swing.JFrame {
                 sidebar_lbBooking.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
                 sidebar_lbBooking.setForeground(new java.awt.Color(255, 255, 255));
                 sidebar_lbBooking.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                sidebar_lbBooking.setText("BOOKING");
+                sidebar_lbBooking.setText(DB.isUser ? "BOOKING" : "ROOM");
 
                 javax.swing.GroupLayout sidebar_bookingLayout = new javax.swing.GroupLayout(sidebar_booking);
                 sidebar_booking.setLayout(sidebar_bookingLayout);
@@ -407,32 +403,6 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(sidebar_lbRoom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 );
 
-                sidebar_receipt.setBackground(new java.awt.Color(25, 118, 211));
-                sidebar_receipt.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-                sidebar_receipt.setPreferredSize(new java.awt.Dimension(0, 80));
-                sidebar_receipt.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mousePressed(java.awt.event.MouseEvent evt) {
-                                sidebar_receiptMousePressed(evt);
-                        }
-                });
-
-                sidebar_lbReceipt.setBackground(new java.awt.Color(133, 212, 241));
-                sidebar_lbReceipt.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
-                sidebar_lbReceipt.setForeground(new java.awt.Color(255, 255, 255));
-                sidebar_lbReceipt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                sidebar_lbReceipt.setText("RECEIPT");
-
-                javax.swing.GroupLayout sidebar_receiptLayout = new javax.swing.GroupLayout(sidebar_receipt);
-                sidebar_receipt.setLayout(sidebar_receiptLayout);
-                sidebar_receiptLayout.setHorizontalGroup(
-                        sidebar_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(sidebar_lbReceipt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                );
-                sidebar_receiptLayout.setVerticalGroup(
-                        sidebar_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(sidebar_lbReceipt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                );
-
                 sidebar_staff.setBackground(new java.awt.Color(25, 118, 211));
                 sidebar_staff.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
                 sidebar_staff.setPreferredSize(new java.awt.Dimension(0, 80));
@@ -457,6 +427,32 @@ public class MainFrame extends javax.swing.JFrame {
                 sidebar_staffLayout.setVerticalGroup(
                         sidebar_staffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(sidebar_lbStaff, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                );
+
+                sidebar_receipt.setBackground(new java.awt.Color(25, 118, 211));
+                sidebar_receipt.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                sidebar_receipt.setPreferredSize(new java.awt.Dimension(0, 80));
+                sidebar_receipt.addMouseListener(new java.awt.event.MouseAdapter() {
+                        public void mousePressed(java.awt.event.MouseEvent evt) {
+                                sidebar_receiptMousePressed(evt);
+                        }
+                });
+
+                sidebar_lbReceipt.setBackground(new java.awt.Color(133, 212, 241));
+                sidebar_lbReceipt.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
+                sidebar_lbReceipt.setForeground(new java.awt.Color(255, 255, 255));
+                sidebar_lbReceipt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                sidebar_lbReceipt.setText("RECEIPT");
+
+                javax.swing.GroupLayout sidebar_receiptLayout = new javax.swing.GroupLayout(sidebar_receipt);
+                sidebar_receipt.setLayout(sidebar_receiptLayout);
+                sidebar_receiptLayout.setHorizontalGroup(
+                        sidebar_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(sidebar_lbReceipt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                );
+                sidebar_receiptLayout.setVerticalGroup(
+                        sidebar_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(sidebar_lbReceipt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 );
 
                 sidebar_sepSidabar.setBackground(new java.awt.Color(255, 255, 255));
@@ -517,8 +513,8 @@ public class MainFrame extends javax.swing.JFrame {
                 panel_sidebar.setLayer(sidebar_home, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_booking, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_room, javax.swing.JLayeredPane.DEFAULT_LAYER);
-                panel_sidebar.setLayer(sidebar_receipt, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_staff, javax.swing.JLayeredPane.DEFAULT_LAYER);
+                panel_sidebar.setLayer(sidebar_receipt, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_sepSidabar, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_information, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_logout, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -584,7 +580,7 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addGap(0, 0, 0)))
                         .addGroup(panel_sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(panel_sidebarLayout.createSequentialGroup()
-                                        .addGap(320, 320, 320)
+                                        .addGap(160, 160, 160)
                                         .addComponent(sidebar_staff, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(0, 0, 0)))
                         .addGroup(panel_sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -756,6 +752,13 @@ public class MainFrame extends javax.swing.JFrame {
                 booking_staff.add(booking_btnDelete);
 
                 booking_actions.add(booking_staff, "card2");
+                if(DB.isUser) {
+                        booking_actions.setVisible(false);
+                        booking_btnBooking.setVisible(true);
+                } else {
+                        booking_btnBooking.setVisible(false);
+                        booking_actions.setVisible(true);
+                }
 
                 booking_txtHours.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
                 booking_txtHours.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Hours", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
@@ -776,8 +779,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(booking_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(booking_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(booking_btnBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
                                         .addComponent(booking_sepSearch)
                                         .addComponent(booking_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(booking_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -786,7 +788,8 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addComponent(booking_txtRoomStatus, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(booking_txtHours)
                                         .addComponent(booking_txtRoomName, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(booking_txtPrice, javax.swing.GroupLayout.Alignment.TRAILING))
+                                        .addComponent(booking_txtPrice, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(booking_btnBooking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(5, 5, 5))
                 );
                 booking_inforLayout.setVerticalGroup(
@@ -818,6 +821,12 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(booking_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5))
                 );
+
+                if (DB.isUser) {
+                        booking_txtHours.setVisible(true);
+                } else {
+                        booking_txtHours.setVisible(false);
+                }
 
                 booking_section.setRightComponent(booking_infor);
 
@@ -1536,7 +1545,6 @@ public class MainFrame extends javax.swing.JFrame {
                 );
 
                 infor_txtUser.setText(DB.user.toUpperCase());
-                infor_txtEmail.setText(initUser.getEmail());
 
                 javax.swing.GroupLayout content_informationLayout = new javax.swing.GroupLayout(content_information);
                 content_information.setLayout(content_informationLayout);
@@ -1590,6 +1598,14 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addContainerGap()))
                 );
 
+                if (DB.isUser ) {
+                        sidebar_staff.setVisible(false);
+                        sidebar_room.setVisible(true);
+                } else {
+                        sidebar_staff.setVisible(true);
+                        sidebar_room.setVisible(false);
+                }
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
                 getContentPane().setLayout(layout);
                 layout.setHorizontalGroup(
@@ -1635,7 +1651,19 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_receipt_btnRefreshActionPerformed
 
         private void receipt_listMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_receipt_listMousePressed
-		// TODO add your handling code here:
+		try {
+			int selectedRow = receipt_list.getSelectedRow();
+			int id = (int) receipt_list.getValueAt(selectedRow, 0);
+			receiptSelected = listReceipt.stream().filter(r -> r.getId() == id).findFirst().get();
+
+			receipt_txtReciptId.setText(String.valueOf(receiptSelected.getId()));
+			receipt_txtCreated.setText(receiptSelected.getCreated());
+			receipt_txtBookingId.setText(String.valueOf(receiptSelected.getBookingId()));
+			receipt_txtHours.setText(String.valueOf(receiptSelected.getHours()));
+			receipt_txtPayment.setText(String.valueOf(receiptSelected.getPayment())); 
+		} catch (Exception e) {
+			receiptSelected = null;
+		}
         }//GEN-LAST:event_receipt_listMousePressed
 
         private void room_btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room_btnCheckOutActionPerformed
@@ -1835,7 +1863,7 @@ public class MainFrame extends javax.swing.JFrame {
 				userSelected.setPassword(aes.encryptAES(password, key));
 				userSelected.setKey(key);
 
-				JOptionPane.showMessageDialog(null, User.updateUser(userSelected) ? "Update success" : "Update fail");
+				JOptionPane.showMessageDialog(null, User.updateInfor(userSelected) ? "Update success" : "Update fail");
 			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
 				Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -1947,8 +1975,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 	}// GEN-LAST:event_sidebar_logoutMousePressed
 
-	private void sidebar_informationMousePressed(
-	java.awt.event.MouseEvent evt) {// GEN-FIRST:event_sidebar_informationMousePressed
+	private void sidebar_informationMousePressed(java.awt.event.MouseEvent evt) {
 		setSidebarColor(sidebar_information);
 		resetSidebarColor(sidebar_receipt);
 		resetSidebarColor(sidebar_home);
@@ -1956,7 +1983,9 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_booking);
 		cardLayout.show(panel_content, "content_information");
-	}// GEN-LAST:event_sidebar_informationMousePressed
+		initUser = listUser.stream().filter(u -> u.getUsername().equals(DB.user.toUpperCase())).findFirst().get();
+		infor_txtEmail.setText(initUser != null ? initUser.getEmail() : "");
+	}
 
 	/**
 	 * @param args the command line arguments

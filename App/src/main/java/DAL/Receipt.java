@@ -9,6 +9,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,7 +21,7 @@ public class Receipt {
 	private Connection conn = DB.getConnect();
 
 	public List<BLL.Receipt> getAllReceipt(String search) {
-		sql = "SELECT R.* FROM RECEIPT R JOIN BOOKING B ON R.BOOKING_ID = B.BOOKING_ID WHERE B.USERNAME LIKE ? ";
+		sql = "SELECT R.* FROM DEV.RECEIPT R JOIN DEV.BOOKING B ON R.BOOKING_ID = B.BOOKING_ID WHERE B.USERNAME LIKE ? ";
 		List list = new ArrayList<>();
 		if (conn != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
@@ -39,17 +40,17 @@ public class Receipt {
 					list.add(receipt);
 				}
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 
 		return list;
 	}
 
 	public Boolean createReceipt(BLL.Receipt receipt) {
-		sql = "{CALL DEV.RECEIPT_PKG.INSERT_RECEIPT( ?, ?, ?, ?)}";
+		sql = "{CALL DEV.INSERT_RECEIPT( ?, ?, ?, ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -63,17 +64,17 @@ public class Receipt {
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 
 		return false;
 	}
 
 	public Boolean deleteReceipt(BLL.Receipt receipt) {
-		sql = "{CALL DEV.RECEIPT_PKG.DELETE_RECEIPT( ?)}";
+		sql = "{CALL DEV.DELETE_RECEIPT( ?)}";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
@@ -84,11 +85,11 @@ public class Receipt {
 
 				return rowsInserted > 0;
 			} catch (SQLException e) {
-				System.out.println(e.getMessage());
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 
 		} else {
-			System.out.println("Connect error!!!");
+			JOptionPane.showMessageDialog(null, "Connect error!!!");
 		}
 		return false;
 	}

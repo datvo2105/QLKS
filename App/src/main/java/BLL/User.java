@@ -9,73 +9,35 @@ package BLL;
  * @author vogiadat
  */
 public class User {
-
-	int id;
-	String username;
-	String email;
-	String password;
-	String key;
+	String user;
+	String created;	
 
 	public User() {
 	}
 
 	public User(
-	int id,
-	String username,
-	String email,
-	String password,
-	String key) {
-		this.id = id;
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.key = key;
+	String user,
+	String created) {
+		this.user = user;
+		this.created = created;
 	}
 
-	public int getId() {
-		return id;
+	public String getUser() {
+		return user;
 	}
 
-	public void setId(
-	int id) {
-		this.id = id;
+	public void setUser(
+	String user) {
+		this.user = user;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getCreated() {
+		return created;
 	}
 
-	public void setUsername(
-	String username) {
-		this.username = username;
+	public void setCreated(
+	String created) {
+		this.created = created;
 	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(
-	String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(
-	String password) {
-		this.password = password;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(
-	String key) {
-		this.key = key;
-	}
-
 
 }

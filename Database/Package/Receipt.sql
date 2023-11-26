@@ -53,3 +53,36 @@ END RECEIPT_PKG;
 /
 
 --==========================================================
+ --==========================================================
+ --====================CREATE RECEIPT===========================
+    CREATE OR REPLACE PROCEDURE INSERT_RECEIPT (
+        CREATED_PARAM IN STRING,
+        BOOKING_ID IN NUMBER,
+        TOTAL_HOURS IN NUMBER,
+        PAYMENT IN NUMBER
+    ) IS
+    BEGIN
+        INSERT INTO DEV.RECEIPT (
+            CREATED,
+            BOOKING_ID,
+            TOTAL_HOURS,
+            PAYMENT
+        ) VALUES (
+            TO_DATE(CREATED_PARAM, 'HH24:MI:SS dd/MM/yyyy'),
+            BOOKING_ID,
+            TOTAL_HOURS,
+            PAYMENT
+        );
+        COMMIT;
+    END INSERT_RECEIPT;
+ --==========================================================
+ --====================DELETE RECEIPT===========================
+    CREATE OR REPLACE PROCEDURE DELETE_RECEIPT (
+        RECEIPT_ID_PARAM IN NUMBER
+    ) IS
+    BEGIN
+        DELETE FROM DEV.RECEIPT
+        WHERE
+            DEV.RECEIPT.RECEIPT_ID = RECEIPT_ID_PARAM;
+        COMMIT;
+    END DELETE_RECEIPT;

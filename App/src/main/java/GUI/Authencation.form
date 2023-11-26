@@ -281,9 +281,6 @@
                   <Color blue="ff" green="ff" red="cc" type="rgb"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="login_txtPasswordActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="login_btnLogin">
               <Properties>
@@ -518,9 +515,6 @@
                   <Border info="null"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="register_txtPasswordActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="register_lbLogin">
               <Properties>

@@ -6,8 +6,6 @@ GRANT ALL PRIVILEGES TO DEV;
 
 ALTER SESSION SET NLS_DATE_FORMAT = 'HH24:MI:SS DD/MM/YYYY';
 
-MA
-
 //========================================================================================
 
 // TABLE ROOM
@@ -68,13 +66,13 @@ CREATE TABLE BOOKING (
     USERNAME VARCHAR(50),
     ROOM_ID NUMBER,
     BOOKING_HOURS NUMBER,
-    STATUS VARCHAR(20) DEFAULT 'Pending' CHECK (STATUS IN ('Pending', 'CheckIn', 'CheckOut'))
+    STATUS VARCHAR(20) DEFAULT 'Pending' CHECK (STATUS IN ('Pending', 'CheckIn', 'CheckOut', 'Cancel'))
     FOREIGN KEY(ROOM_ID) REFERENCES ROOM(ROOM_ID)
 );
 ALTER TABLE BOOKING
 MODIFY (BOOKING_ROOM_KEY VARCHAR2(4000));
 ALTER TABLE BOOKING
-ADD STATUS VARCHAR(20) DEFAULT 'Pending' CHECK (STATUS IN ('Pending', 'CheckIn', 'CheckOut'));
+MODIFY STATUS VARCHAR(20) DEFAULT 'Pending' CHECK (STATUS IN ('Pending', 'CheckIn', 'CheckOut', 'Cancel'));
 /
 
 SELECT
