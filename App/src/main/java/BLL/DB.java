@@ -25,11 +25,8 @@ public class DB {
 
 	public static Connection connect() {
 		try {
-			if (user.equalsIgnoreCase("sys")) {
-				user += " as sysdba";
-			}
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			conn = DriverManager.getConnection(url + server, user, pass);
+			conn = DriverManager.getConnection(url + server, (user.equalsIgnoreCase("SYS") ? user + " AS SYSDBA" : user), pass);
 
 			isUser = checkUser(conn);
 
@@ -66,4 +63,5 @@ public class DB {
 			return false;
 		}
 	}
+
 }

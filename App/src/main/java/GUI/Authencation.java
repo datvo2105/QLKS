@@ -483,7 +483,7 @@ public class Authencation extends javax.swing.JFrame {
 		String username = register_txtUsername.getText().toUpperCase();
 		String password = String.valueOf(register_txtPassword.getPassword());
 
-		if (User.createUser(username, password, username + "@test.vn")) {
+		if (User.createUser("USER", username, password, "unknow@gmail.vn")) {
 			DB.user = username;
 			DB.pass = password;
 			Connection conn = DB.connect();

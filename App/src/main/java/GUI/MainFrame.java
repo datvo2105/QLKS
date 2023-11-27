@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import javax.swing.JOptionPane;
@@ -68,33 +66,30 @@ public class MainFrame extends javax.swing.JFrame {
 	private final DAL.Booking Booking = new DAL.Booking();
 	private String filterBooking = "";
 
-	// User
-	private List<BLL.Infor> listUser = new ArrayList<>();
-	private BLL.Infor userSelected = null;
-	private DAL.Infor User = new DAL.Infor();
+	// Infor 
+	private List<BLL.Infor> listInfor = new ArrayList<>();
 	private BLL.Infor initUser = null;
+	private DAL.Infor Infor = new DAL.Infor();
 
-	private BLL.Infor getUserOfForm() {
-		try {
-			int selectedRow = user_list.getSelectedRow();
-			int id = (int) user_list.getValueAt(selectedRow, 0);
-			return listUser.stream().filter(user -> user.getId() == id).findFirst().get();
-		} catch (Exception e) {
-			return null;
-		}
-	}
+	// User
+	private List<BLL.User> listUser = new ArrayList<>();
+	private BLL.User userSelected = null;
+	private DAL.User User = new DAL.User();
 
+//	private BLL.User getInitUser() {
+//		try {
+//			int selectedRow = user_list.getSelectedRow();
+//			int id = (int) user_list.getValueAt(selectedRow, 0);
+//			return listUser.stream().filter(user -> user.getUser()== id).findFirst().get();
+//		} catch (Exception e) {
+//			return null;
+//		}
+//	}
 	// Receipt
 	private List<BLL.Receipt> listReceipt = new ArrayList<>();
 	private BLL.Receipt receiptSelected = null;
 	private DAL.Receipt Receipt = new DAL.Receipt();
 
-//	private BLL.Receipt getInitReceipt() {
-//		try {
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
 	// ==================================================================================
 	// ==================================================================================
 	CardLayout cardLayout;
@@ -143,9 +138,18 @@ public class MainFrame extends javax.swing.JFrame {
 				booking.getStatus()
 			});
 		}
+		// Infor
+		listInfor = Infor.getAllInfor("");
+		model = (DefaultTableModel) user_list.getModel();
+		model.setRowCount(0);
+		for (BLL.Infor user : listInfor) {
+			model.addRow(new Object[]{
+				user.getId(),
+				user.getUsername(),
+				user.getEmail()});
+		}
 
 		// User
-		listUser = User.getAllInfor("");
 //		model = (DefaultTableModel) .getModel();
 //		model.setRowCount(0);
 //		for (BLL.User user : users) {
@@ -157,7 +161,6 @@ public class MainFrame extends javax.swing.JFrame {
 //		}
 //		model = (DefaultTableModel) .getModel();
 //		model.setRowCount(0);
-
 		// Receipt 
 		listReceipt = Receipt.getAllReceipt(DB.isUser ? DB.user.toUpperCase() : "");
 		model = (DefaultTableModel) receipt_list.getModel();
@@ -171,7 +174,7 @@ public class MainFrame extends javax.swing.JFrame {
 				receipt.getPayment()
 			});
 		}
-		
+
 	}
 
 	/**
@@ -279,15 +282,13 @@ public class MainFrame extends javax.swing.JFrame {
                 user_searchActions = new javax.swing.JPanel();
                 user_btnRefresh = new javax.swing.JButton();
                 user_btnSearch = new javax.swing.JButton();
-                user_txtUserId = new javax.swing.JTextField();
                 user_txtEmail = new javax.swing.JTextField();
                 user_actions = new javax.swing.JPanel();
                 user_btnAdd = new javax.swing.JButton();
-                user_btnUpdate = new javax.swing.JButton();
                 user_btnDelete = new javax.swing.JButton();
                 user_txtRole = new javax.swing.JComboBox<>();
                 user_txtUsername = new javax.swing.JTextField();
-                user_txtPassword = new javax.swing.JTextField();
+                user_txtPassword = new javax.swing.JPasswordField();
                 content_information = new javax.swing.JPanel();
                 infor_lbInfor = new javax.swing.JLabel();
                 panel_information = new javax.swing.JPanel();
@@ -296,10 +297,11 @@ public class MainFrame extends javax.swing.JFrame {
                 infor_txtPassword = new javax.swing.JPasswordField();
                 infor_btnUpdate = new javax.swing.JButton();
                 infor_sepUser = new javax.swing.JSeparator();
+                panel_history = new javax.swing.JPanel();
+                infor_txtBookingStatus = new javax.swing.JComboBox<>();
                 infor_btnRefresh = new javax.swing.JButton();
                 infor_table = new javax.swing.JScrollPane();
                 infor_listBooking = new javax.swing.JTable();
-                infor_txtBookingStatus = new javax.swing.JComboBox<>();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
                 setBackground(new java.awt.Color(133, 212, 241));
@@ -613,14 +615,14 @@ public class MainFrame extends javax.swing.JFrame {
                         content_homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, content_homeLayout.createSequentialGroup()
                                 .addGap(99, 99, 99)
-                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
                                 .addGap(93, 93, 93))
                 );
                 content_homeLayout.setVerticalGroup(
                         content_homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_homeLayout.createSequentialGroup()
                                 .addGap(25, 25, 25)
-                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+                                .addComponent(home_lbHome, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
                                 .addGap(174, 174, 174))
                 );
 
@@ -779,7 +781,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(booking_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(booking_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
+                                        .addComponent(booking_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                                         .addComponent(booking_sepSearch)
                                         .addComponent(booking_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(booking_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -815,7 +817,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(booking_txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(booking_txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 191, Short.MAX_VALUE)
                                 .addComponent(booking_btnBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(booking_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -838,7 +840,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(5, 5, 5)
                                 .addGroup(content_bookingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, content_bookingLayout.createSequentialGroup()
-                                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
+                                                .addComponent(booking_lbBooking, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addContainerGap())
                                         .addGroup(content_bookingLayout.createSequentialGroup()
                                                 .addComponent(booking_section, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -850,7 +852,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addContainerGap()
                                 .addComponent(booking_lbBooking, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, 0)
-                                .addComponent(booking_section, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+                                .addComponent(booking_section, javax.swing.GroupLayout.DEFAULT_SIZE, 648, Short.MAX_VALUE)
                                 .addGap(5, 5, 5))
                 );
 
@@ -983,7 +985,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(room_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(room_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(room_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
+                                        .addComponent(room_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                                         .addComponent(room_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(room_actions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(room_txtRoomName)
@@ -1011,7 +1013,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(room_txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(room_fieldKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 220, Short.MAX_VALUE)
                                 .addComponent(room_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(5, 5, 5))
                 );
@@ -1026,7 +1028,7 @@ public class MainFrame extends javax.swing.JFrame {
                         content_roomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, content_roomLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(room_lbRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+                                .addComponent(room_lbRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
                                 .addContainerGap())
                         .addGroup(content_roomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_roomLayout.createSequentialGroup()
@@ -1039,11 +1041,11 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(content_roomLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(room_lbRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(642, Short.MAX_VALUE))
+                                .addContainerGap(648, Short.MAX_VALUE))
                         .addGroup(content_roomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_roomLayout.createSequentialGroup()
                                         .addGap(90, 90, 90)
-                                        .addComponent(room_section, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+                                        .addComponent(room_section, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1153,7 +1155,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(receipt_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(receipt_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(receipt_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
+                                        .addComponent(receipt_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                                         .addComponent(receipt_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(receipt_txtCreated)
                                         .addComponent(receipt_txtReciptId, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1186,7 +1188,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(receipt_txtHours, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(24, 24, 24)
                                 .addComponent(receipt_txtPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(250, Short.MAX_VALUE))
+                                .addContainerGap(256, Short.MAX_VALUE))
                 );
 
                 receipt_section.setRightComponent(receipt_infor);
@@ -1197,7 +1199,7 @@ public class MainFrame extends javax.swing.JFrame {
                         content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, content_receiptLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(receipt_lbReceipt, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+                                .addComponent(receipt_lbReceipt, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
                                 .addContainerGap())
                         .addGroup(content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_receiptLayout.createSequentialGroup()
@@ -1209,11 +1211,11 @@ public class MainFrame extends javax.swing.JFrame {
                         content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_receiptLayout.createSequentialGroup()
                                 .addComponent(receipt_lbReceipt, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 648, Short.MAX_VALUE))
+                                .addGap(0, 654, Short.MAX_VALUE))
                         .addGroup(content_receiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_receiptLayout.createSequentialGroup()
                                         .addGap(90, 90, 90)
-                                        .addComponent(receipt_section, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+                                        .addComponent(receipt_section, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1236,17 +1238,17 @@ public class MainFrame extends javax.swing.JFrame {
                 user_list.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 user_list.setModel(new javax.swing.table.DefaultTableModel(
                         new Object [][] {
-                                {null, null, null, null},
-                                {null, null, null, null},
-                                {null, null, null, null},
-                                {null, null, null, null}
+                                {null, null, null},
+                                {null, null, null},
+                                {null, null, null},
+                                {null, null, null}
                         },
                         new String [] {
-                                "User ID", "Username", "Email", "Role"
+                                "User ID", "Username", "Email"
                         }
                 ) {
                         boolean[] canEdit = new boolean [] {
-                                false, false, false, false
+                                false, false, false
                         };
 
                         public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1295,10 +1297,6 @@ public class MainFrame extends javax.swing.JFrame {
                 });
                 user_searchActions.add(user_btnSearch);
 
-                user_txtUserId.setEditable(false);
-                user_txtUserId.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                user_txtUserId.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "User Id", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
-
                 user_txtEmail.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
                 user_txtEmail.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Email", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
@@ -1315,15 +1313,6 @@ public class MainFrame extends javax.swing.JFrame {
                 });
                 user_actions.add(user_btnAdd);
 
-                user_btnUpdate.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-                user_btnUpdate.setText("Update");
-                user_btnUpdate.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                user_btnUpdateActionPerformed(evt);
-                        }
-                });
-                user_actions.add(user_btnUpdate);
-
                 user_btnDelete.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
                 user_btnDelete.setText("Detele");
                 user_btnDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -1334,7 +1323,7 @@ public class MainFrame extends javax.swing.JFrame {
                 user_actions.add(user_btnDelete);
 
                 user_txtRole.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                user_txtRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USER", "MAN", "STAFF" }));
+                user_txtRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "USER", "MANAGER" }));
                 user_txtRole.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Role", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
                 user_txtUsername.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -1342,11 +1331,6 @@ public class MainFrame extends javax.swing.JFrame {
 
                 user_txtPassword.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
                 user_txtPassword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Password", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
-                user_txtPassword.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mousePressed(java.awt.event.MouseEvent evt) {
-                                user_txtPasswordMousePressed(evt);
-                        }
-                });
 
                 javax.swing.GroupLayout user_inforLayout = new javax.swing.GroupLayout(user_infor);
                 user_infor.setLayout(user_inforLayout);
@@ -1356,15 +1340,26 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(user_inforLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(user_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(user_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
+                                        .addComponent(user_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
                                         .addComponent(user_sepSearch)
-                                        .addComponent(user_txtUserId, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(user_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(user_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(user_txtEmail)
-                                        .addComponent(user_txtRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(user_txtUsername)
-                                        .addComponent(user_txtPassword))
+                                        .addComponent(user_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(5, 5, 5))
+                        .addGroup(user_inforLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(user_txtUsername)
+                                .addGap(5, 5, 5))
+                        .addGroup(user_inforLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(user_txtEmail)
+                                .addGap(5, 5, 5))
+                        .addGroup(user_inforLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(user_txtPassword)
+                                .addGap(5, 5, 5))
+                        .addGroup(user_inforLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(user_txtRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(5, 5, 5))
                         .addGroup(user_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(user_inforLayout.createSequentialGroup()
@@ -1385,23 +1380,24 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(user_searchActions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(user_sepSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(user_txtUserId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(user_txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(user_txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(user_txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(user_txtRole, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(user_txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(user_txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
                         .addGroup(user_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(user_inforLayout.createSequentialGroup()
-                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, user_inforLayout.createSequentialGroup()
+                                        .addContainerGap(611, Short.MAX_VALUE)
                                         .addComponent(user_actions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(5, 5, 5)))
                 );
+
+                user_actions.setVisible((DB.user.equalsIgnoreCase("DEV") || DB.user.equalsIgnoreCase("SYS") )? true: false);
+                user_txtRole.setVisible((DB.user.equalsIgnoreCase("DEV") || DB.user.equalsIgnoreCase("SYS") )? true: false);
 
                 user_section.setRightComponent(user_infor);
 
@@ -1409,7 +1405,7 @@ public class MainFrame extends javax.swing.JFrame {
                 content_user.setLayout(content_userLayout);
                 content_userLayout.setHorizontalGroup(
                         content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(user_lbUser, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                        .addComponent(user_lbUser, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                         .addGroup(content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_userLayout.createSequentialGroup()
                                         .addGap(5, 5, 5)
@@ -1420,11 +1416,11 @@ public class MainFrame extends javax.swing.JFrame {
                         content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(content_userLayout.createSequentialGroup()
                                 .addComponent(user_lbUser, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 647, Short.MAX_VALUE))
+                                .addGap(0, 653, Short.MAX_VALUE))
                         .addGroup(content_userLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(content_userLayout.createSequentialGroup()
                                         .addGap(91, 91, 91)
-                                        .addComponent(user_section, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+                                        .addComponent(user_section, javax.swing.GroupLayout.DEFAULT_SIZE, 648, Short.MAX_VALUE)
                                         .addGap(5, 5, 5)))
                 );
 
@@ -1459,6 +1455,12 @@ public class MainFrame extends javax.swing.JFrame {
                                 infor_btnUpdateActionPerformed(evt);
                         }
                 });
+
+                panel_history.setBackground(new java.awt.Color(255, 255, 255));
+
+                infor_txtBookingStatus.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+                infor_txtBookingStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Pending", "CheckIn", "CheckOut" }));
+                infor_txtBookingStatus.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Status", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
 
                 infor_btnRefresh.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
                 infor_btnRefresh.setText("Refresh");
@@ -1496,31 +1498,49 @@ public class MainFrame extends javax.swing.JFrame {
                 infor_listBooking.setInheritsPopupMenu(true);
                 infor_table.setViewportView(infor_listBooking);
 
-                infor_txtBookingStatus.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-                infor_txtBookingStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Pending", "CheckIn", "CheckOut" }));
-                infor_txtBookingStatus.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Status", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+                javax.swing.GroupLayout panel_historyLayout = new javax.swing.GroupLayout(panel_history);
+                panel_history.setLayout(panel_historyLayout);
+                panel_historyLayout.setHorizontalGroup(
+                        panel_historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_historyLayout.createSequentialGroup()
+                                .addGroup(panel_historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                                        .addGroup(panel_historyLayout.createSequentialGroup()
+                                                .addComponent(infor_txtBookingStatus, 0, 545, Short.MAX_VALUE)
+                                                .addGap(0, 0, 0)
+                                                .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, 0))
+                );
+                panel_historyLayout.setVerticalGroup(
+                        panel_historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panel_historyLayout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addGroup(panel_historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(infor_txtBookingStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))
+                );
 
                 javax.swing.GroupLayout panel_informationLayout = new javax.swing.GroupLayout(panel_information);
                 panel_information.setLayout(panel_informationLayout);
                 panel_informationLayout.setHorizontalGroup(
                         panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(infor_sepUser)
                         .addGroup(panel_informationLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(panel_informationLayout.createSequentialGroup()
-                                                .addComponent(infor_txtBookingStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(4, 4, 4))
-                                        .addGroup(panel_informationLayout.createSequentialGroup()
-                                                .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
-                                                        .addComponent(infor_txtUser, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(infor_txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(infor_txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(infor_btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addGap(5, 5, 5))))
+                                        .addComponent(infor_txtUser, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(infor_txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(infor_txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(infor_btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE))
+                                .addGap(5, 5, 5))
+                        .addComponent(infor_sepUser)
+                        .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_informationLayout.createSequentialGroup()
+                                        .addGap(5, 5, 5)
+                                        .addComponent(panel_history, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(5, 5, 5)))
                 );
                 panel_informationLayout.setVerticalGroup(
                         panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1535,16 +1555,16 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(infor_btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(infor_sepUser, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(2, 2, 2)
-                                .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(infor_txtBookingStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(infor_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(infor_table, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
-                                .addGap(5, 5, 5))
+                                .addContainerGap(405, Short.MAX_VALUE))
+                        .addGroup(panel_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_informationLayout.createSequentialGroup()
+                                        .addGap(225, 225, 225)
+                                        .addComponent(panel_history, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(5, 5, 5)))
                 );
 
                 infor_txtUser.setText(DB.user.toUpperCase());
+                panel_history.setVisible((DB.isUser || DB.user.equalsIgnoreCase("DEV") || DB.user.equalsIgnoreCase("SYS")) ? true : false);
 
                 javax.swing.GroupLayout content_informationLayout = new javax.swing.GroupLayout(content_information);
                 content_information.setLayout(content_informationLayout);
@@ -1553,7 +1573,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(content_informationLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)
                                 .addGroup(content_informationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(infor_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(infor_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 763, Short.MAX_VALUE)
                                         .addComponent(panel_information, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(5, 5, 5))
                 );
@@ -1590,7 +1610,7 @@ public class MainFrame extends javax.swing.JFrame {
                 panel_mainLayout.setVerticalGroup(
                         panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(panel_content)
-                        .addComponent(panel_sidebar, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
+                        .addComponent(panel_sidebar, javax.swing.GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE)
                         .addGroup(panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(panel_mainLayout.createSequentialGroup()
                                         .addGap(5, 5, 5)
@@ -1618,18 +1638,31 @@ public class MainFrame extends javax.swing.JFrame {
                 );
         }// </editor-fold>//GEN-END:initComponents
 
-        private void user_txtPasswordMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_user_txtPasswordMousePressed
-		// TODO add your handling code here:
-        }//GEN-LAST:event_user_txtPasswordMousePressed
-
         private void user_btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnDeleteActionPerformed
-		// TODO add your handling code here:
+		String username = user_txtUsername.getText().toUpperCase();
+
+		if (User.deleteUser(username)) {
+			try {
+				JOptionPane.showMessageDialog(rootPane, "Create success!!!");
+			} catch (HeadlessException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		}
         }//GEN-LAST:event_user_btnDeleteActionPerformed
 
-        private void user_btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnUpdateActionPerformed
-        }//GEN-LAST:event_user_btnUpdateActionPerformed
-
         private void user_btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnAddActionPerformed
+		String username = user_txtUsername.getText().toUpperCase();
+		String password = user_txtPassword.getText().isBlank()? "1" : user_txtPassword.getText();
+		String email = user_txtEmail.getText();
+		String role = String.valueOf(user_txtRole.getSelectedItem());
+
+		if (User.createUser(role, username, password, email)) {
+			try {
+				JOptionPane.showMessageDialog(rootPane, "Create success!!!");
+			} catch (HeadlessException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage());
+			}
+		}
         }//GEN-LAST:event_user_btnAddActionPerformed
 
         private void user_btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnSearchActionPerformed
@@ -1660,7 +1693,7 @@ public class MainFrame extends javax.swing.JFrame {
 			receipt_txtCreated.setText(receiptSelected.getCreated());
 			receipt_txtBookingId.setText(String.valueOf(receiptSelected.getBookingId()));
 			receipt_txtHours.setText(String.valueOf(receiptSelected.getHours()));
-			receipt_txtPayment.setText(String.valueOf(receiptSelected.getPayment())); 
+			receipt_txtPayment.setText(String.valueOf(receiptSelected.getPayment()));
 		} catch (Exception e) {
 			receiptSelected = null;
 		}
@@ -1851,19 +1884,19 @@ public class MainFrame extends javax.swing.JFrame {
         }//GEN-LAST:event_booking_btnRefreshActionPerformed
 
         private void infor_btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infor_btnUpdateActionPerformed
-		userSelected = initUser;
-		if (userSelected == null) {
+		BLL.Infor user = initUser;
+		if (user == null) {
 			return;
 		} else {
 			try {
 				AES aes = new AES();
 				String key = aes.stringKey();
 				String password = infor_txtPassword.getText();
-				userSelected.setEmail(infor_txtEmail.getText());
-				userSelected.setPassword(aes.encryptAES(password, key));
-				userSelected.setKey(key);
+				user.setEmail(infor_txtEmail.getText());
+				user.setPassword(aes.encryptAES(password, key));
+				user.setKey(key);
 
-				JOptionPane.showMessageDialog(null, User.updateInfor(userSelected) ? "Update success" : "Update fail");
+				JOptionPane.showMessageDialog(null, Infor.updateInfor(user) ? "Update success" : "Update fail");
 			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
 				Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -1983,7 +2016,7 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_booking);
 		cardLayout.show(panel_content, "content_information");
-		initUser = listUser.stream().filter(u -> u.getUsername().equals(DB.user.toUpperCase())).findFirst().get();
+		initUser = listInfor.stream().filter(u -> u.getUsername().equals(DB.user.toUpperCase())).findFirst().get();
 		infor_txtEmail.setText(initUser != null ? initUser.getEmail() : "");
 	}
 
@@ -2033,6 +2066,7 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JTextField infor_txtPassword;
         private javax.swing.JTextField infor_txtUser;
         private javax.swing.JLayeredPane panel_content;
+        private javax.swing.JPanel panel_history;
         private javax.swing.JPanel panel_information;
         private javax.swing.JLayeredPane panel_main;
         private javax.swing.JLayeredPane panel_sidebar;
@@ -2092,7 +2126,6 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JButton user_btnDelete;
         private javax.swing.JButton user_btnRefresh;
         private javax.swing.JButton user_btnSearch;
-        private javax.swing.JButton user_btnUpdate;
         private javax.swing.JPanel user_infor;
         private javax.swing.JLabel user_lbInfor;
         private javax.swing.JLabel user_lbUser;
@@ -2106,7 +2139,6 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JTextField user_txtPassword;
         private javax.swing.JComboBox<String> user_txtRole;
         private javax.swing.JTextField user_txtSearch;
-        private javax.swing.JTextField user_txtUserId;
         private javax.swing.JTextField user_txtUsername;
         // End of variables declaration//GEN-END:variables
 

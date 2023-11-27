@@ -43,31 +43,8 @@ public class User {
 		return list;
 	}
 
-	public Boolean createUser(String username, String password, String email) {
-		sql = "CALL DEV.USER_PKG.CREATE_USER( ?, ?, ?)";
-		if (conn != null) {
-			try {
-				PreparedStatement sm = conn.prepareStatement(sql);
-
-				sm.setString(1, username);
-				sm.setString(2, password);
-				sm.setString(3, email);
-
-				sm.executeUpdate();
-
-				return true;
-			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage());
-			}
-		} else {
-			JOptionPane.showMessageDialog(null, "Connect fail!");
-		}
-
-		return false;
-	}
-
-	public Boolean createManager(String username, String password, String email) {
-		sql = "CALL DEV.USER_PKG.CREATE_MANAGER( ?, ?, ?)";
+	public Boolean createUser(String role, String username, String password, String email) {
+		sql = "CALL DEV.USER_PKG.CREATE_" + role + "( ?, ?, ?)";
 		if (conn != null) {
 			try {
 				PreparedStatement sm = conn.prepareStatement(sql);
