@@ -71,6 +71,9 @@ public class MainFrame extends javax.swing.JFrame {
 	private BLL.Infor initUser = null;
 	private DAL.Infor Infor = new DAL.Infor();
 
+	private List<BLL.Log> listLog = new ArrayList<>();
+	private final DAL.Log Log = new DAL.Log();
+
 	// User
 	private List<BLL.User> listUser = new ArrayList<>();
 	private BLL.User userSelected = null;
@@ -174,6 +177,16 @@ public class MainFrame extends javax.swing.JFrame {
 				receipt.getPayment()
 			});
 		}
+		listLog = Log.getLog();
+		model = (DefaultTableModel) list_log.getModel();
+		model.setRowCount(0);
+		for (BLL.Log log : listLog) {
+			model.addRow(new Object[]{
+				log.getUser(),
+				log.getTime(),
+				log.getIp()
+			});
+		}
 
 	}
 
@@ -204,6 +217,8 @@ public class MainFrame extends javax.swing.JFrame {
                 sidebar_lbInformation = new javax.swing.JLabel();
                 sidebar_logout = new javax.swing.JPanel();
                 sidebar_lbLogout = new javax.swing.JLabel();
+                sidebar_log = new javax.swing.JPanel();
+                sidebar_lbLog = new javax.swing.JLabel();
                 panel_content = new javax.swing.JLayeredPane();
                 content_home = new javax.swing.JPanel();
                 home_lbHome = new javax.swing.JLabel();
@@ -302,6 +317,13 @@ public class MainFrame extends javax.swing.JFrame {
                 infor_btnRefresh = new javax.swing.JButton();
                 infor_table = new javax.swing.JScrollPane();
                 infor_listBooking = new javax.swing.JTable();
+                content_log = new javax.swing.JPanel();
+                log_lbLog = new javax.swing.JLabel();
+                panel_information1 = new javax.swing.JPanel();
+                panel_history1 = new javax.swing.JPanel();
+                table_log = new javax.swing.JScrollPane();
+                list_log = new javax.swing.JTable();
+                log_btnRefresh = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
                 setBackground(new java.awt.Color(133, 212, 241));
@@ -512,6 +534,32 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(sidebar_lbLogout, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 );
 
+                sidebar_log.setBackground(new java.awt.Color(25, 118, 211));
+                sidebar_log.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                sidebar_log.setPreferredSize(new java.awt.Dimension(0, 80));
+                sidebar_log.addMouseListener(new java.awt.event.MouseAdapter() {
+                        public void mousePressed(java.awt.event.MouseEvent evt) {
+                                sidebar_logMousePressed(evt);
+                        }
+                });
+
+                sidebar_lbLog.setBackground(new java.awt.Color(133, 212, 241));
+                sidebar_lbLog.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
+                sidebar_lbLog.setForeground(new java.awt.Color(255, 255, 255));
+                sidebar_lbLog.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                sidebar_lbLog.setText("LOG");
+
+                javax.swing.GroupLayout sidebar_logLayout = new javax.swing.GroupLayout(sidebar_log);
+                sidebar_log.setLayout(sidebar_logLayout);
+                sidebar_logLayout.setHorizontalGroup(
+                        sidebar_logLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(sidebar_lbLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                );
+                sidebar_logLayout.setVerticalGroup(
+                        sidebar_logLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(sidebar_lbLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                );
+
                 panel_sidebar.setLayer(sidebar_home, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_booking, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_room, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -520,6 +568,7 @@ public class MainFrame extends javax.swing.JFrame {
                 panel_sidebar.setLayer(sidebar_sepSidabar, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_information, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_sidebar.setLayer(sidebar_logout, javax.swing.JLayeredPane.DEFAULT_LAYER);
+                panel_sidebar.setLayer(sidebar_log, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
                 javax.swing.GroupLayout panel_sidebarLayout = new javax.swing.GroupLayout(panel_sidebar);
                 panel_sidebar.setLayout(panel_sidebarLayout);
@@ -556,6 +605,11 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGroup(panel_sidebarLayout.createSequentialGroup()
                                         .addGap(0, 0, 0)
                                         .addComponent(sidebar_information, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                                        .addGap(0, 0, 0)))
+                        .addGroup(panel_sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(panel_sidebarLayout.createSequentialGroup()
+                                        .addGap(0, 0, 0)
+                                        .addComponent(sidebar_log, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                                         .addGap(0, 0, 0)))
                 );
                 panel_sidebarLayout.setVerticalGroup(
@@ -595,6 +649,11 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(sidebar_information, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(80, 80, 80)))
+                        .addGroup(panel_sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(panel_sidebarLayout.createSequentialGroup()
+                                        .addGap(330, 330, 330)
+                                        .addComponent(sidebar_log, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 );
 
                 panel_content.setBackground(new java.awt.Color(204, 255, 255));
@@ -1343,23 +1402,11 @@ public class MainFrame extends javax.swing.JFrame {
                                         .addComponent(user_lbInfor, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
                                         .addComponent(user_sepSearch)
                                         .addComponent(user_txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(user_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(5, 5, 5))
-                        .addGroup(user_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(user_txtUsername)
-                                .addGap(5, 5, 5))
-                        .addGroup(user_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(user_txtEmail)
-                                .addGap(5, 5, 5))
-                        .addGroup(user_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(user_txtPassword)
-                                .addGap(5, 5, 5))
-                        .addGroup(user_inforLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(user_txtRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(user_searchActions, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(user_txtUsername)
+                                        .addComponent(user_txtEmail)
+                                        .addComponent(user_txtPassword)
+                                        .addComponent(user_txtRole, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(5, 5, 5))
                         .addGroup(user_inforLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(user_inforLayout.createSequentialGroup()
@@ -1497,6 +1544,11 @@ public class MainFrame extends javax.swing.JFrame {
                 });
                 infor_listBooking.setInheritsPopupMenu(true);
                 infor_table.setViewportView(infor_listBooking);
+                if (infor_listBooking.getColumnModel().getColumnCount() > 0) {
+                        infor_listBooking.getColumnModel().getColumn(3).setHeaderValue("Room Key");
+                        infor_listBooking.getColumnModel().getColumn(4).setHeaderValue("Booking Hours");
+                        infor_listBooking.getColumnModel().getColumn(5).setHeaderValue("Status");
+                }
 
                 javax.swing.GroupLayout panel_historyLayout = new javax.swing.GroupLayout(panel_history);
                 panel_history.setLayout(panel_historyLayout);
@@ -1589,6 +1641,118 @@ public class MainFrame extends javax.swing.JFrame {
 
                 panel_content.add(content_information, "content_information");
 
+                content_log.setBackground(new java.awt.Color(204, 255, 255));
+
+                log_lbLog.setFont(new java.awt.Font("Arial", 3, 48)); // NOI18N
+                log_lbLog.setForeground(new java.awt.Color(25, 118, 211));
+                log_lbLog.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                log_lbLog.setText("Log");
+                log_lbLog.setAlignmentX(0.5F);
+
+                panel_information1.setBackground(new java.awt.Color(255, 255, 255));
+
+                panel_history1.setBackground(new java.awt.Color(255, 255, 255));
+
+                table_log.setBackground(new java.awt.Color(255, 255, 255));
+                table_log.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+
+                list_log.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+                list_log.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+                list_log.setModel(new javax.swing.table.DefaultTableModel(
+                        new Object [][] {
+                                {null, null, null},
+                                {null, null, null},
+                                {null, null, null},
+                                {null, null, null}
+                        },
+                        new String [] {
+                                "Username", "Time", "IP"
+                        }
+                ) {
+                        boolean[] canEdit = new boolean [] {
+                                false, false, false
+                        };
+
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                                return canEdit [columnIndex];
+                        }
+                });
+                list_log.setInheritsPopupMenu(true);
+                table_log.setViewportView(list_log);
+
+                javax.swing.GroupLayout panel_history1Layout = new javax.swing.GroupLayout(panel_history1);
+                panel_history1.setLayout(panel_history1Layout);
+                panel_history1Layout.setHorizontalGroup(
+                        panel_history1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_history1Layout.createSequentialGroup()
+                                .addComponent(table_log, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))
+                );
+                panel_history1Layout.setVerticalGroup(
+                        panel_history1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panel_history1Layout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(table_log, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))
+                );
+
+                log_btnRefresh.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+                log_btnRefresh.setText("Refresh");
+                log_btnRefresh.setPreferredSize(new java.awt.Dimension(80, 42));
+                log_btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                log_btnRefreshActionPerformed(evt);
+                        }
+                });
+
+                javax.swing.GroupLayout panel_information1Layout = new javax.swing.GroupLayout(panel_information1);
+                panel_information1.setLayout(panel_information1Layout);
+                panel_information1Layout.setHorizontalGroup(
+                        panel_information1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_information1Layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(panel_history1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(5, 5, 5))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_information1Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(log_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                );
+                panel_information1Layout.setVerticalGroup(
+                        panel_information1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_information1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(log_btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(panel_history1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(5, 5, 5))
+                );
+
+                panel_history.setVisible((DB.isUser || DB.user.equalsIgnoreCase("DEV") || DB.user.equalsIgnoreCase("SYS")) ? true : false);
+
+                javax.swing.GroupLayout content_logLayout = new javax.swing.GroupLayout(content_log);
+                content_log.setLayout(content_logLayout);
+                content_logLayout.setHorizontalGroup(
+                        content_logLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(content_logLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addGroup(content_logLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(log_lbLog, javax.swing.GroupLayout.DEFAULT_SIZE, 763, Short.MAX_VALUE)
+                                        .addComponent(panel_information1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(5, 5, 5))
+                );
+                content_logLayout.setVerticalGroup(
+                        content_logLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(content_logLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(log_lbLog, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(panel_information1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(5, 5, 5))
+                );
+
+                panel_content.add(content_log, "content_log");
+
                 panel_main.setLayer(home_btnClose, javax.swing.JLayeredPane.DRAG_LAYER);
                 panel_main.setLayer(panel_sidebar, javax.swing.JLayeredPane.DEFAULT_LAYER);
                 panel_main.setLayer(panel_content, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -1652,7 +1816,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         private void user_btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_user_btnAddActionPerformed
 		String username = user_txtUsername.getText().toUpperCase();
-		String password = user_txtPassword.getText().isBlank()? "1" : user_txtPassword.getText();
+		String password = user_txtPassword.getText().isBlank() ? "1" : user_txtPassword.getText();
 		String email = user_txtEmail.getText();
 		String role = String.valueOf(user_txtRole.getSelectedItem());
 
@@ -1924,6 +2088,21 @@ public class MainFrame extends javax.swing.JFrame {
 		this.initData();
         }//GEN-LAST:event_infor_btnRefreshActionPerformed
 
+        private void sidebar_logMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sidebar_logMousePressed
+		setSidebarColor(sidebar_log);
+		resetSidebarColor(sidebar_booking);
+		resetSidebarColor(sidebar_receipt);
+		resetSidebarColor(sidebar_room);
+		resetSidebarColor(sidebar_staff);
+		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_home);
+		cardLayout.show(panel_content, "content_log");
+        }//GEN-LAST:event_sidebar_logMousePressed
+
+        private void log_btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_log_btnRefreshActionPerformed
+		this.initData();
+        }//GEN-LAST:event_log_btnRefreshActionPerformed
+
 	private void setSidebarColor(JPanel panel) {
 		panel.setBackground(new Color(133, 212, 241));
 	}
@@ -1943,6 +2122,7 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_room);
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_log);
 		cardLayout.show(panel_content, "content_home");
 	}// GEN-LAST:event_sidebar_homeMousePressed
 
@@ -1953,11 +2133,13 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_receipt);
 		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_log);
 		cardLayout.show(panel_content, "content_booking");
 	}// GEN-LAST:event_sidebar_bookingMousePressed
 
 	private void sidebar_roomMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_sidebar_roomMousePressed
 		setSidebarColor(sidebar_room);
+		resetSidebarColor(sidebar_log);
 		resetSidebarColor(sidebar_home);
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_booking);
@@ -1973,6 +2155,7 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_staff);
 		resetSidebarColor(sidebar_booking);
 		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_log);
 		cardLayout.show(panel_content, "content_receipt");
 	}// GEN-LAST:event_sidebar_receiptMousePressed
 
@@ -1983,6 +2166,7 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_receipt);
 		resetSidebarColor(sidebar_booking);
 		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_log);
 		cardLayout.show(panel_content, "content_staff");
 	}// GEN-LAST:event_sidebar_staffMousePressed
 
@@ -1994,6 +2178,7 @@ public class MainFrame extends javax.swing.JFrame {
 		resetSidebarColor(sidebar_receipt);
 		resetSidebarColor(sidebar_booking);
 		resetSidebarColor(sidebar_information);
+		resetSidebarColor(sidebar_log);
 		conn = DB.disConnect();
 		try {
 			if (conn != null) {
@@ -2050,6 +2235,7 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JPanel content_booking;
         private javax.swing.JPanel content_home;
         private javax.swing.JPanel content_information;
+        private javax.swing.JPanel content_log;
         private javax.swing.JPanel content_receipt;
         private javax.swing.JPanel content_room;
         private javax.swing.JPanel content_user;
@@ -2065,9 +2251,14 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JTextField infor_txtEmail;
         private javax.swing.JTextField infor_txtPassword;
         private javax.swing.JTextField infor_txtUser;
+        private javax.swing.JTable list_log;
+        private javax.swing.JButton log_btnRefresh;
+        private javax.swing.JLabel log_lbLog;
         private javax.swing.JLayeredPane panel_content;
         private javax.swing.JPanel panel_history;
+        private javax.swing.JPanel panel_history1;
         private javax.swing.JPanel panel_information;
+        private javax.swing.JPanel panel_information1;
         private javax.swing.JLayeredPane panel_main;
         private javax.swing.JLayeredPane panel_sidebar;
         private javax.swing.JButton receipt_btnRefresh;
@@ -2112,15 +2303,18 @@ public class MainFrame extends javax.swing.JFrame {
         private javax.swing.JLabel sidebar_lbBooking;
         private javax.swing.JLabel sidebar_lbHome;
         private javax.swing.JLabel sidebar_lbInformation;
+        private javax.swing.JLabel sidebar_lbLog;
         private javax.swing.JLabel sidebar_lbLogout;
         private javax.swing.JLabel sidebar_lbReceipt;
         private javax.swing.JLabel sidebar_lbRoom;
         private javax.swing.JLabel sidebar_lbStaff;
+        private javax.swing.JPanel sidebar_log;
         private javax.swing.JPanel sidebar_logout;
         private javax.swing.JPanel sidebar_receipt;
         private javax.swing.JPanel sidebar_room;
         private javax.swing.JSeparator sidebar_sepSidabar;
         private javax.swing.JPanel sidebar_staff;
+        private javax.swing.JScrollPane table_log;
         private javax.swing.JPanel user_actions;
         private javax.swing.JButton user_btnAdd;
         private javax.swing.JButton user_btnDelete;
